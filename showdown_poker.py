@@ -73,6 +73,24 @@ class Deck:
 
 		return drawcards
 
+#Post-Draw
+def adv():
+	hss = sorted(h_strength.items(), key=lambda k: k[1], reverse=True)
+	print(f'\n\n\nPlayer {hss[0][0]+1} has the strongest hand! [{round(hss[0][1]/10000,6)}]\nPlayer {hss[hnumber-1][0] + 1} has the weakest hand :( [{round(hss[hnumber-1][1]/10000,6)}]') if show_strength else print(f'\n\n\nPlayer {hss[0][0] + 1} has the strongest hand!\nPlayer {hss[hnumber-1][0]+1} has the weakest hand :(')
+	if show_strength:
+
+		print('\n\n\n\n\nHand Occurence:\n')
+		for x in range(10):
+			print(ho_names[x],hand_occurence[x],f'({int(round(100*hand_occurence[x]/len(hss),0))}%)')
+
+		print('\n\n\n\n\nFull Player Ranking:\n')
+		for x in range(len(hss)):
+			print(f'{x+1}.',f'Player {hss[x][0]+1}',f'[{round(hss[x][1]/10000,6)}]')
+
+		print('\n\n\nExecution Time:', "%ss" % (int(round(time()-start_time,2))))
+
+
+
 #Determine Values and Suits in Hand
 def determine(hand):
 	values = []; suits = []; vset = set()
@@ -332,17 +350,4 @@ while h_inc < hnumber:
 
 	h_inc += 1
 
-hss = sorted(h_strength.items(), key=lambda k: k[1], reverse=True)
-print(f'\n\n\nPlayer {hss[0][0]+1} has the strongest hand! [{round(hss[0][1]/10000,6)}]\nPlayer {hss[hnumber-1][0] + 1} has the weakest hand :( [{round(hss[hnumber-1][1]/10000,6)}]') if show_strength else print(f'\n\n\nPlayer {hss[0][0] + 1} has the strongest hand!\nPlayer {hss[hnumber-1][0]+1} has the weakest hand :(')
-if show_strength:
-
-	print('\n\n\n\n\nHand Occurence:\n')
-	for x in range(10):
-		print(ho_names[x],hand_occurence[x],f'({int(round(100*hand_occurence[x]/len(hss),0))}%)')
-
-	print('\n\n\n\n\nFull Player Ranking:\n')
-	for x in range(len(hss)):
-		print(f'{x+1}.',f'Player {hss[x][0]+1}',f'[{round(hss[x][1]/10000,6)}]')
-
-	print('\n\n\nExecution Time:', "%ss" % (int(round(time()-start_time,2))))
-
+adv()
