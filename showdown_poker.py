@@ -296,15 +296,15 @@ def straightflush(values,suit,vset):
 hand_occurence = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0}
 ho_names = ['High Card: ','Pair: ','Two-Pair: ','Three of a Kind: ','Straight: ','Flush: ','Full House: ','Four of a Kind: ','Straight Flush: ','Royal Flush: ']
 
-decks = decks('How many decks are there? ')
-deck = Deck()
-
 drawcards = {}
 
+decks = decks('How many decks are there? ')
 x = cph('How many cards per hand? ')
 hnumber = hnumber(floor((decks*52)/x), f'How many players are there (max {floor((decks*52)/x)})? ')
 show_strength = sstrength("Would you like to show advanced stats? ")
+
 h_inc = 0; h_strength = {}; start_time = time()
+deck = Deck()
 
 while h_inc < hnumber:
 	print(f"\nPlayer {h_inc + 1}'s hand:")
