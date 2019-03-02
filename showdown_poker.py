@@ -176,16 +176,13 @@ def numpair(values):
 			vp.remove(pairs[0])
 		strength = 2000 + 10*pairs[0] + vp[0] + .1*vp[1] + .01*vp[2];
 		return f'Pair of {evalname(pairs[0])}s'
-	if len(pairs) == 2:
+	if len(pairs) >= 2:
 		vps = values.copy()
+		pairs = sorted(pairs,reverse=True)
 		for _ in range(2):
 			vps.remove(pairs[0]); vps.remove(pairs[1])
-		if pairs[0]>pairs[1]:
-			strength = (3000 + 10*int(pairs[0]) + int(pairs[1])) + .1*vps[0]
-			return f'{evalname(pairs[0])}s and {evalname(pairs[1])}s'
-		else:
-			strength = (3000 + 10*int(pairs[1]) + int(pairs[0])) + .1*vps[0]
-			return f'{evalname(pairs[1])}s and {evalname(pairs[0])}s'
+		strength = (3000 + 10*int(pairs[0]) + int(pairs[1])) + .1*vps[0]
+		return f'{evalname(pairs[0])}s and {evalname(pairs[1])}s'
 
 
 def detset(values):
