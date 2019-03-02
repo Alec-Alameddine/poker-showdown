@@ -1,5 +1,6 @@
 import copy
 import distutils.core
+from enum import Enum
 from time import time
 from random import randint,shuffle
 from math import floor
@@ -72,6 +73,19 @@ class Deck:
 			drawcards[y].valname(drawcards[y].value); drawcards[y].suitname(drawcards[y].suit)
 
 		return drawcards
+
+class BaseStrength(Enum):
+	ROYAL_FLUSH = 10000
+	STRAIGHT_FLUSH = 9000
+	QUADS = 8000
+	FULL_HOUSE = 7000
+	FLUSH = 6000
+	STRAIGHT = 5000
+	SET = 4000
+	TWO_PAIR = 3000
+	PAIR = 2000
+	HIGH_CARD = 1000
+
 
 #Post-Draw
 def adv():
@@ -180,7 +194,7 @@ def evalname(x):
 
 def hcard(values):
 	global strength
-	strength = 1000 + 10*values[0] + values[1] + .1*values[2] + .01*values[3] + .001*values[4]
+	strength = BaseStrength.HIGH_CARD.value + 10*values[0] + values[1] + .1*values[2] + .01*values[3] + .001*values[4]
 	return f'High-Card {evalname(values[0])}'
 
 def numpair(values):
@@ -192,14 +206,14 @@ def numpair(values):
 		vp = values.copy()
 		for _ in range(2):
 			vp.remove(pairs[0])
-		strength = 2000 + 10*pairs[0] + vp[0] + .1*vp[1] + .01*vp[2];
+		strength = BaseStrength.PAIR.value + 10*pairs[0] + vp[0] + .1*vp[1] + .01*vp[2];
 		return f'Pair of {evalname(pairs[0])}s'
 	if len(pairs) >= 2:
 		vps = values.copy()
 		pairs = sorted(pairs,reverse=True)
 		for _ in range(2):
 			vps.remove(pairs[0]); vps.remove(pairs[1])
-		strength = (3000 + 10*int(pairs[0]) + int(pairs[1])) + .1*vps[0]
+		strength = (BaseStrength.TWO_PAIR.value + 10*int(pairs[0]) + int(pairs[1])) + .1*vps[0]
 		return f'{evalname(pairs[0])}s and {evalname(pairs[1])}s'
 
 
@@ -212,7 +226,7 @@ def detset(values):
 		vs = values.copy()
 		for _ in range(3):
 			vs.remove(detsets[0])
-		strength = 4000 + 10*detsets[0] + vs[0] + .1*vs[1]
+		strength = BaseStrength.SET.value + 10*detsets[0] + vs[0] + .1*vs[1]
 		return f'Set of {evalname(detsets[0])}s'
 
 def straight(vset):
@@ -223,13 +237,13 @@ def straight(vset):
 		if rank in vset:
 			count += 1
 			if count == 5:
-				strength = 5000 + 10*min(vset)
+				strength = BaseStrength.STRAIGHT.value + 10*min(vset)
 				straight = f'Straight'
 				#from {evalname(min(vset))} to {evalname(max(vset))}'
 				break
 		else: count = 0
 	if {14,2,3,4,5} < vset:
-		strength = 5000
+		strength = BaseStrength.STRAIGHT.value
 		straight = 'Straight from Ace to Five'
 	return straight
 
@@ -240,7 +254,7 @@ def flush(values,suits):
 	if len(flushes) < 5:
 		flush = False
 	else:
-		strength = 6000 + 10*flushes_vals[0] + flushes_vals[1] + .1*flushes_vals[2] + .01*flushes_vals[3] + .001*flushes_vals[4]
+		strength = BaseStrength.FLUSH.value + 10*flushes_vals[0] + flushes_vals[1] + .1*flushes_vals[2] + .01*flushes_vals[3] + .001*flushes_vals[4]
 		flush = f'{evalname(max(values))}-High flush of {flushes[0]}'
 	return flush
 
@@ -249,7 +263,7 @@ def fullhouse(values):
 	pairs = [val for val in values if values.count(val) == 2]
 	detsets = [val for val in values if values.count(val) == 3]
 	if detset(values) != False and numpair(values) != False:
-		strength = 7000 + 10*detsets[0] + pairs[0]
+		strength = BaseStrength.FULL_HOUSE.value + 10*detsets[0] + pairs[0]
 		fh = f'{evalname(detsets[0])}s full of {evalname(pairs[0])}s'
 	else:
 		fh = False
@@ -264,7 +278,7 @@ def quads(values):
 		vq = values.copy()
 		for _ in range(4):
 			vq.remove(quads[0])
-		strength = 8000 + 10*quads[0] + vq[0]
+		strength = BaseStrength.QUADS.value + 10*quads[0] + vq[0]
 		return f'Quad {evalname(quads[0])}s'
 
 def straightflush(values,suit,vset):
@@ -282,10 +296,10 @@ def straightflush(values,suit,vset):
 		flush = True
 
 	if straight_ == "True" and flush == True:
-		strength = 9000 + 10*min(vset)
+		strength = BaseStrength.STRAIGHT_FLUSH.value + 10*min(vset)
 		sf = f'Straight Flush of {flushes[0]}'
 	elif straight_ == "Royal" and flush == True:
-		strength = 10000
+		strength = BaseStrength.ROYAL_FLUSH.value
 		sf = f'Royal Flush of {flushes[0]}'
 	else:
 		sf = False
