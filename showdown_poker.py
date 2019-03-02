@@ -51,7 +51,7 @@ class Card:
 		elif self.suit == "Diamonds":
 			self.sname = '♦'
 
-	def cardname(self):
+	def __str__(self):
 		return f'{self.sname}{self.vname}{self.sname}'
 
 #All Decks
@@ -326,7 +326,7 @@ while h_inc < hnumber:
 	values,vset,suits = determine(user_hand)
 	print("| ",end="")
 	for c_x in user_hand:
-		print(user_hand[c_x].cardname(),end=" | ")
+		print(user_hand[c_x],end=" | ")
 
 	hcard(values); numpair(values); detset(values); straight(vset); flush(values,suits); fullhouse(values); quads(values); straightflush(values,suits,vset)
 	if strength < 2000:
