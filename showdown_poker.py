@@ -333,7 +333,7 @@ for h_inc in range(hnumber):
 	values,vset,suits = determine(user_hand)
 	print("| ",end="")
 	for c_x in user_hand:
-		print(user_hand[c_x],repr(user_hand[c_x]),end=" | ")
+		print(user_hand[c_x],end=" | ")
 
 	hcard(values); numpair(values); detset(values); straight(vset); flush(values,suits); fullhouse(values); quads(values); straightflush(values,suits,vset)
 	if strength < 2000:
