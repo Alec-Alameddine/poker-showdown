@@ -5,7 +5,7 @@ from time import time
 from random import randint,shuffle
 from math import floor
 
-#STRAIGHTS AND STRAIGHT FLUSHES BROKEN AT THE MOMENT. FLUSH TAKING TOP OF EACH HAND INSTEAD OF EACH FLUSH
+#STRAIGHTS AND STRAIGHT FLUSHES BROKEN AT THE MOMENT
 
 #Individual Cards
 class Card:
@@ -318,10 +318,10 @@ x = cph('How many cards per hand? ')
 hnumber = hnumber(floor((decks*52)/x), f'How many players are there (max {floor((decks*52)/x)})? ')
 show_strength = sstrength("Would you like to show advanced stats? ")
 
-h_inc = 0; h_strength = {}; start_time = time()
+h_strength = {}; start_time = time()
 deck = Deck()
 
-while h_inc < hnumber:
+for h_inc in range(hnumber):
 	print(f"\nPlayer {h_inc + 1}'s hand:")
 	user_hand = deck.draw(x)
 	values,vset,suits = determine(user_hand)
@@ -362,7 +362,5 @@ while h_inc < hnumber:
 		hand_occurence[9]+=1
 
 	h_strength[h_inc] = strength
-
-	h_inc += 1
 
 adv()
