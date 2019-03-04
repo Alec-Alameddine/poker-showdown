@@ -13,7 +13,7 @@ class Card:
 		self.vname = ''
 		self.sname = ''
 
-	def valname(self, value):
+	def vsname(self,value,suit):
 		if self.value == 2:
 			self.vname = 'Two'
 		elif self.value == 3:
@@ -41,7 +41,6 @@ class Card:
 		elif self.value == 14:
 			self.vname = 'Ace'
 
-	def suitname(self, suit):
 		if self.suit == "Hearts":
 			self.sname = '♥'
 		elif self.suit == "Spades":
@@ -70,7 +69,7 @@ class Deck:
 	def draw(self,x):
 		for y in range(x):
 			drawcards[y] = self.cards.pop()
-			drawcards[y].valname(drawcards[y].value); drawcards[y].suitname(drawcards[y].suit)
+			drawcards[y].vsname(drawcards[y].value,drawcards[y].suit)
 
 		return drawcards
 
@@ -164,7 +163,7 @@ def sstrength(msg):
 			print('Please indicate whether you\'d like to show advanced stats')
 
 #Evaluation Functions
-def evalname(x):
+def valname(x):
 	if x == 2:
 		return 'Two'
 	elif x == 3:
@@ -195,7 +194,7 @@ def evalname(x):
 def hcard(values):
 	global strength
 	strength = BaseStrength.HIGH_CARD.value + 10*values[0] + values[1] + .1*values[2] + .01*values[3] + .001*values[4]
-	return f'High-Card {evalname(values[0])}'
+	return f'High-Card {valname(values[0])}'
 
 def numpair(values):
 	global strength
@@ -207,14 +206,14 @@ def numpair(values):
 		for _ in range(2):
 			vp.remove(pairs[0])
 		strength = BaseStrength.PAIR.value + 10*pairs[0] + vp[0] + .1*vp[1] + .01*vp[2];
-		return f'Pair of {evalname(pairs[0])}s'
+		return f'Pair of {valname(pairs[0])}s'
 	if len(pairs) >= 2:
 		vps = values.copy()
 		pairs = sorted(pairs,reverse=True)
 		for _ in range(2):
 			vps.remove(pairs[0]); vps.remove(pairs[1])
 		strength = (BaseStrength.TWO_PAIR.value + 10*int(pairs[0]) + int(pairs[1])) + .1*vps[0]
-		return f'{evalname(pairs[0])}s and {evalname(pairs[1])}s'
+		return f'{valname(pairs[0])}s and {valname(pairs[1])}s'
 
 
 def detset(values):
@@ -227,7 +226,7 @@ def detset(values):
 		for _ in range(3):
 			vs.remove(detsets[0])
 		strength = BaseStrength.SET.value + 10*detsets[0] + vs[0] + .1*vs[1]
-		return f'Set of {evalname(detsets[0])}s'
+		return f'Set of {valname(detsets[0])}s'
 
 def straight(vset):
 	global strength
@@ -239,7 +238,7 @@ def straight(vset):
 			if count == 5:
 				strength = BaseStrength.STRAIGHT.value + 10*min(vset)
 				straight = f'Straight'
-				#from {evalname(min(vset))} to {evalname(max(vset))}'
+				#from {valname(min(vset))} to {valname(max(vset))}'
 				break
 		else: count = 0
 	if {14,2,3,4,5} < vset:
@@ -255,7 +254,7 @@ def flush(values,suits):
 		flush = False
 	else:
 		strength = BaseStrength.FLUSH.value + 10*flushes_vals[0] + flushes_vals[1] + .1*flushes_vals[2] + .01*flushes_vals[3] + .001*flushes_vals[4]
-		flush = f'{evalname(max(values))}-High flush of {flushes[0]}'
+		flush = f'{valname(max(values))}-High flush of {flushes[0]}'
 	return flush
 
 def fullhouse(values):
@@ -264,7 +263,7 @@ def fullhouse(values):
 	detsets = [val for val in values if values.count(val) == 3]
 	if detset(values) != False and numpair(values) != False:
 		strength = BaseStrength.FULL_HOUSE.value + 10*detsets[0] + pairs[0]
-		fh = f'{evalname(detsets[0])}s full of {evalname(pairs[0])}s'
+		fh = f'{valname(detsets[0])}s full of {valname(pairs[0])}s'
 	else:
 		fh = False
 	return fh
@@ -279,7 +278,7 @@ def quads(values):
 		for _ in range(4):
 			vq.remove(quads[0])
 		strength = BaseStrength.QUADS.value + 10*quads[0] + vq[0]
-		return f'Quad {evalname(quads[0])}s'
+		return f'Quad {valname(quads[0])}s'
 
 def straightflush(values,suit,vset):
 	global strength
