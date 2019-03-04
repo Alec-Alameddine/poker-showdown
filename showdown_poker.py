@@ -5,7 +5,7 @@ from time import time
 from random import randint,shuffle
 from math import floor
 
-#STRAIGHTS AND STRAIGHT FLUSHES BROKEN AT THE MOMENT. FLUSH REGISTERS HIGH CARD AS HIGHEST FLUSH CARD
+#STRAIGHTS AND STRAIGHT FLUSHES BROKEN FOR >5 AT THE MOMENT. FLUSH REGISTERS HIGH CARD AS HIGHEST FLUSH CARD
 
 #Individual Cards
 class Card:
@@ -278,7 +278,7 @@ def fullhouse(values):
 
 def quads(values):
 	global strength
-	quads = [val for val in values if values.count(val) == 4]
+	quads = [val for val in values if values.count(val) >= 4]
 	if len(quads) < 1:
 		return False
 	else:
