@@ -5,6 +5,8 @@ from time import time
 from random import randint,shuffle
 from math import floor
 
+#STRAIGHTS AND STRAIGHT FLUSHES BROKEN AT THE MOMENT
+
 #Individual Cards
 class Card:
 	def __init__ (self,value,suit):
