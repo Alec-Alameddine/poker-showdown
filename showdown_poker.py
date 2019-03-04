@@ -5,7 +5,7 @@ from time import time
 from random import randint,shuffle
 from math import floor
 
-#STRAIGHTS AND STRAIGHT FLUSHES BROKEN AT THE MOMENT
+#STRAIGHTS AND STRAIGHT FLUSHES BROKEN AT THE MOMENT. FLUSH TAKING TOP OF EACH HAND INSTEAD OF EACH FLUSH
 
 #Individual Cards
 class Card:
