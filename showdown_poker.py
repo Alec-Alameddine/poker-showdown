@@ -15,6 +15,15 @@ class Card:
 		self.vname = ''
 		self.sname = ''
 
+	def __str__(self):
+		return f'{self.sname}{self.vname}{self.sname}'
+
+	def __repr__(self):
+		if self.value <= 10:
+			return f'{self.value}{self.suit[0].lower()}'
+		if self.value > 10:
+			return f'{self.vname[0]}{self.suit[0].lower()}'
+
 	def vsname(self,value,suit):
 		if self.value == 2:
 			self.vname = 'Two'
@@ -51,9 +60,6 @@ class Card:
 			self.sname = '♣'
 		elif self.suit == "Diamonds":
 			self.sname = '♦'
-
-	def __str__(self):
-		return f'{self.sname}{self.vname}{self.sname}'
 
 #All Decks
 class Deck:
@@ -327,7 +333,7 @@ for h_inc in range(hnumber):
 	values,vset,suits = determine(user_hand)
 	print("| ",end="")
 	for c_x in user_hand:
-		print(user_hand[c_x],end=" | ")
+		print(user_hand[c_x],repr(user_hand[c_x]),end=" | ")
 
 	hcard(values); numpair(values); detset(values); straight(vset); flush(values,suits); fullhouse(values); quads(values); straightflush(values,suits,vset)
 	if strength < 2000:
