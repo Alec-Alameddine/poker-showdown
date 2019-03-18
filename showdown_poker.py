@@ -102,7 +102,7 @@ def adv():
 
         print('\n\n\n\n\nHand Occurence:\n')
         for x in range(10):
-            print(ho_names[x],hand_occurence[x],f'({int(round(100*hand_occurence[x]/len(hss),0))}%)')
+            print(ho_names[x],hand_occurence[x],f'({int(100*round(hand_occurence[x]/len(hss),1))}%)')
 
         print('\n\n\n\n\nFull Player Ranking:\n')
         for x in range(len(hss)):
@@ -360,8 +360,7 @@ for h_inc in range(hnumber):
     user_hand = deck.draw(x)
     values,vset,suits,all_cards = determine(user_hand)
     print("| ",end="")
-    for c_x in user_hand:
-        print(user_hand[c_x],end=" | ")
+    for c_x in user_hand: print(user_hand[c_x],end=" | ")
 
     evalhand(values,suits,vset,all_cards)
 
