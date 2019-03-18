@@ -355,6 +355,7 @@ h_strength = {}
 start_time = time()
 deck = Deck()
 
+#Main Loop
 for h_inc in range(hnumber):
     print(f"\nPlayer {h_inc + 1}'s hand:")
     user_hand = deck.draw(x)
