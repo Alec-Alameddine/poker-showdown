@@ -103,15 +103,15 @@ def adv():
 
         print('\n\n\n\n\nHand Occurence:\n')
         for x in range(10):
-            print(ho_names[x],hand_occurence[x],f'({int(100*round(hand_occurence[x]/len(hss),1))}%)')
+            print(ho_names[x],hand_occurence[x],f'({round(100*hand_occurence[x]/len(hss),2)}%)')
 
         print('\n\n\n\n\nFull Player Ranking:\n')
         for x in range(len(hss)):
             print(f'{x+1}.',f'Player {hss[x][0]+1}',f'[{round(hss[x][1]/10000,6)}]')
 
-        print('\n\n\nComplete Execution Time:', "%ss" % (int(round(time()-deck_start_time,2))))
-        print('Deck Build Time:', '%ss' % (int(round(deck_end_time-deck_start_time,2))))
-        print('Hand Build Time:', '%ss' % (int(round(time()-deck_end_time,2))))
+        print('\n\n\nComplete Execution Time:', "%ss" % (round(time()-deck_start_time,3)))
+        print('Deck Build Time:', '%ss' % (round(deck_end_time-deck_start_time,3)), f'({int(round(100*(deck_end_time-deck_start_time)/(time()-deck_start_time),0))}%)')
+        print('Hand Build Time:', '%ss' % (round(time()-deck_end_time,3)), f'({int(round(100*(time()-deck_end_time)/(time()-deck_start_time),0))}%)')
 
 
 
