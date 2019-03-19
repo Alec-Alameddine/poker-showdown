@@ -5,7 +5,8 @@ from time import time
 from random import shuffle
 from math import floor
 
-#STRAIGHTS AND STRAIGHT FLUSH DETECTION BROKEN FOR >5c AT THE MOMENT. EVERYTHING PERFECT FOR 5c.
+#STRAIGHTS AND STRAIGHT FLUSH DETECTION BROKEN FOR >5c AT THE MOMENT.
+#EVERYTHING (ALMOST) PERFECT FOR 5c. RARELY A-10 SF WILL NOT REGISTER AS RF
 
 #Individual Cards
 class Card:
@@ -108,7 +109,9 @@ def adv():
         for x in range(len(hss)):
             print(f'{x+1}.',f'Player {hss[x][0]+1}',f'[{round(hss[x][1]/10000,6)}]')
 
-        print('\n\n\nExecution Time:', "%ss" % (int(round(time()-start_time,2))))
+        print('\n\n\nComplete Execution Time:', "%ss" % (int(round(time()-deck_start_time,2))))
+        print('Deck Build Time:', '%ss' % (int(round(deck_end_time-deck_start_time,2))))
+        print('Hand Build Time:', '%ss' % (int(round(time()-deck_end_time,2))))
 
 
 
@@ -130,11 +133,13 @@ def ss():
 def hnumber(max_v,msg):
     while True:
         try:
-            hn = int(input(msg))
-            if 0 < hn <= max_v:
-                return hn
+            hn = input(msg)
+            if hn.lower() == 'm' or hn.lower() == 'max':
+                return max_v
+            elif 0 < int(hn) <= max_v:
+                return int(hn)
             else:
-                print(f'Please enter an integer between 1 and {max}.')
+                print(f'Please enter an integer between 1 and {max_v}.')
         except ValueError:
             print('Please enter a positive integer.')
 
@@ -320,11 +325,15 @@ def straightflush(suit,vset,all_cards):
         if straight(flushes_vals):
             straight_vals = straight(flushes_vals,True)
             if {14,10,11,12,13} <= straight_vals: straight_ = "Royal"
+            if {14,2,3,4,5} <= straight_vals: straight_ = "Wheel"
             else: straight_ = "Normal"
 
     if straight_ == "Normal":
         strength = BaseStrength.STRAIGHT_FLUSH.value + 10*max(flushes_vals)
         sf = f'{valname(max(straight_vals))}-High Straight Flush of {flushes[0]}'
+    elif straight_ == "Wheel":
+        strength = BaseStrength.STRAIGHT_FLUSH.value
+        sf = f'Five-High Straight Flush of {flushes[0]}'
     elif straight_ == "Royal":
         strength = BaseStrength.ROYAL_FLUSH.value
         sf = f'Royal Flush of {flushes[0]}'
@@ -347,13 +356,15 @@ def evalhand(values,suits,vset,all_cards):
 hand_occurence = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0}
 ho_names = ['High Card: ','Pair: ','Two-Pair: ','Three of a Kind: ','Straight: ','Flush: ','Full House: ','Four of a Kind: ','Straight Flush: ','Royal Flush: ']
 
-drawcards = {}
+drawcards, h_strength = {}, {}
 
+#User Input
 decks,x,hnumber,show_strength = get_inputs()
+deck_start_time = time()
 
-h_strength = {}
-start_time = time()
+#Create Decks
 deck = Deck()
+deck_end_time = time()
 
 #Main Loop
 for h_inc in range(hnumber):
