@@ -5,8 +5,6 @@ from time import time
 from random import shuffle
 from math import floor
 
-#STRAIGHTS AND STRAIGHT FLUSH DETECTION BROKEN FOR >5c AT THE MOMENT.
-#EVERYTHING (ALMOST) PERFECT FOR 5c. RARELY A-10 SF WILL NOT REGISTER AS RF
 
 #Individual Cards
 class Card:
@@ -292,7 +290,7 @@ def flush(suits,all_cards):
     flushes = [suit for suit in suits if suits.count(suit) >= 5]
     if flushes: flushes_vals = sorted([card.value for card in all_cards if card.suit == flushes[0]],reverse=True)
     if not flushes:
-        flush = False
+        return False
     else:
         strength = BaseStrength.FLUSH.value + 10*flushes_vals[0] + flushes_vals[1] + .1*flushes_vals[2] + .01*flushes_vals[3] + .001*flushes_vals[4]
         flush = f'{valname(max(flushes_vals))}-High flush of {flushes[0]}'
@@ -319,6 +317,9 @@ def fullhouse(values):
             strength = BaseStrength.FULL_HOUSE.value + 10*trips[0] + trips[1]
             fh = f'{valname(trips[0])}s full of {valname(trips[1])}s'
 
+    if len(trips) == 1 and not pairs:
+        return False
+
     return fh
 
 def quads(values):
@@ -332,7 +333,7 @@ def quads(values):
         strength = BaseStrength.QUADS.value + 10*quads[0] + vq[0]
         return f'Quad {valname(quads[0])}s'
 
-def straightflush(suit,vset,all_cards):
+def straightflush(suits,vset,all_cards):
     global strength
     straight_= False
 
@@ -384,17 +385,14 @@ def count_hand_occurence(strength):
     elif strength == 10000: hand_occurence[9]+=1
 
 
-#Count Hand Occurence
 hand_occurence = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0}
 ho_names = ['High Card: ','Pair: ','Two-Pair: ','Three of a Kind: ','Straight: ','Flush: ','Full House: ','Four of a Kind: ','Straight Flush: ','Royal Flush: ']
 
 drawcards, h_strength = {}, {}
 
-#User Input
 decks, cards_per_hand, hnumber, show_strength = get_inputs()
 deck_start_time = time()
 
-#Create Decks
 deck = Deck()
 deck_end_time = time()
 
