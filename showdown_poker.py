@@ -189,9 +189,9 @@ def post_draw():
         print('\n\n\n\n\nFull Player Ranking:\n')
         for x in range(len(hss)): print(f'{x+1}.',f'Player {hss[x][0]+1}',f'[{round(hss[x][1]/10000,6)}]')
 
-        print('\n\n\nComplete Execution Time:', "%ss" % (round(time()-deck_start_time,3)))
-        print('Deck Build Time:', '%ss' % (round(deck_end_time-deck_start_time,3)), f'({int(round(100*(deck_end_time-deck_start_time)/(time()-deck_start_time),0))}%)')
-        print('Hand Build Time:', '%ss' % (round(time()-deck_end_time,3)), f'({int(round(100*(time()-deck_end_time)/(time()-deck_start_time),0))}%)')
+        print('\n\n\nComplete Execution Time:', "%ss" % (round(time()-deck_start_time,2)))
+        print('Deck Build Time:', '%ss' % (round(deck_end_time-deck_start_time,2)), f'({int(round(100*(deck_end_time-deck_start_time)/(time()-deck_start_time),0))}%)')
+        print('Hand Build Time:', '%ss' % (round(time()-deck_end_time,2)), f'({int(round(100*(time()-deck_end_time)/(time()-deck_start_time),0))}%)')
 
 
 #Evaluation Functions
@@ -303,13 +303,25 @@ def flush(suits,all_cards):
 
 def fullhouse(values):
     global strength
-    pairs = [val for val in values if values.count(val) == 2]
-    trips = [val for val in values if values.count(val) == 3]
-    if trip(values) and numpair(values):
+    trips = list(dict.fromkeys(sorted([val for val in values if values.count(val) == 3],reverse=True)))
+    if not trips:
+        return False
+
+    pairs = sorted([val for val in values if values.count(val) == 2],reverse=True)
+
+    if pairs and trips:
         strength = BaseStrength.FULL_HOUSE.value + 10*trips[0] + pairs[0]
         fh = f'{valname(trips[0])}s full of {valname(pairs[0])}s'
-    else:
-        fh = False
+
+    if len(trips) > 1:
+        if pairs:
+            if trips[1] > pairs[0]:
+                strength = BaseStrength.FULL_HOUSE.value + 10*trips[0] + trips[1]
+                fh = f'{valname(trips[0])}s full of {valname(trips[1])}s'
+        else:
+            strength = BaseStrength.FULL_HOUSE.value + 10*trips[0] + trips[1]
+            fh = f'{valname(trips[0])}s full of {valname(trips[1])}s'
+
     return fh
 
 def quads(values):
