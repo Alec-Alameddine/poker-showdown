@@ -1,1 +1,1 @@
-This command-line program generates poker hands and compares their strength.
+This command-line program generates poker hands and compares their strengths.
