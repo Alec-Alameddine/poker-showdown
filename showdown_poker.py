@@ -94,27 +94,6 @@ class BaseStrength(Enum):
     PAIR = 2000
     HIGH_CARD = 1000
 
-
-#Post-Draw
-def adv():
-    hss = sorted(h_strength.items(), key=lambda k: k[1], reverse=True)
-    print(f'\n\n\nPlayer {hss[0][0]+1} has the strongest hand! [{round(hss[0][1]/10000,6)}]\nPlayer {hss[hnumber-1][0] + 1} has the weakest hand :( [{round(hss[hnumber-1][1]/10000,6)}]') if show_strength else print(f'\n\n\nPlayer {hss[0][0] + 1} has the strongest hand!\nPlayer {hss[hnumber-1][0]+1} has the weakest hand :(')
-    if show_strength:
-
-        print('\n\n\n\n\nHand Occurence:\n')
-        for x in range(10):
-            print(ho_names[x],hand_occurence[x],f'({round(100*hand_occurence[x]/len(hss),2)}%)')
-
-        print('\n\n\n\n\nFull Player Ranking:\n')
-        for x in range(len(hss)):
-            print(f'{x+1}.',f'Player {hss[x][0]+1}',f'[{round(hss[x][1]/10000,6)}]')
-
-        print('\n\n\nComplete Execution Time:', "%ss" % (round(time()-deck_start_time,3)))
-        print('Deck Build Time:', '%ss' % (round(deck_end_time-deck_start_time,3)), f'({int(round(100*(deck_end_time-deck_start_time)/(time()-deck_start_time),0))}%)')
-        print('Hand Build Time:', '%ss' % (round(time()-deck_end_time,3)), f'({int(round(100*(time()-deck_end_time)/(time()-deck_start_time),0))}%)')
-
-
-
 #Determine Values and Suits in Hand
 def determine(hand):
     values, vset, suits, all_cards = [], set(), [], []
@@ -184,6 +163,36 @@ def get_inputs():
     sstrength_ = sstrength("Would you like to show advanced stats? ")
 
     return (decks_,cph_,hnumber_,sstrength_)
+
+def print_hand(x):
+    print(f"\nPlayer {h_inc + 1}'s hand:")
+    user_hand = deck.draw(x)
+    print("| ",end="")
+    for c_x in user_hand: print(user_hand[c_x],end=" | ")
+
+    return user_hand
+
+
+def post_draw():
+    hss = sorted(h_strength.items(), key=lambda k: k[1], reverse=True)
+
+    if not show_strength:
+        print(f'\n\n\nPlayer {hss[0][0] + 1} has the strongest hand!\nPlayer {hss[hnumber-1][0]+1} has the weakest hand :(')
+
+    if show_strength:
+
+        print(f'\n\n\nPlayer {hss[0][0]+1} has the strongest hand! [{round(hss[0][1]/10000,6)}]\nPlayer {hss[hnumber-1][0] + 1} has the weakest hand :( [{round(hss[hnumber-1][1]/10000,6)}]')
+
+        print('\n\n\n\n\nHand Occurence:\n')
+        for x in range(10): print(ho_names[x],hand_occurence[x],f'({round(100*hand_occurence[x]/len(hss),2)}%)')
+
+        print('\n\n\n\n\nFull Player Ranking:\n')
+        for x in range(len(hss)): print(f'{x+1}.',f'Player {hss[x][0]+1}',f'[{round(hss[x][1]/10000,6)}]')
+
+        print('\n\n\nComplete Execution Time:', "%ss" % (round(time()-deck_start_time,3)))
+        print('Deck Build Time:', '%ss' % (round(deck_end_time-deck_start_time,3)), f'({int(round(100*(deck_end_time-deck_start_time)/(time()-deck_start_time),0))}%)')
+        print('Hand Build Time:', '%ss' % (round(time()-deck_end_time,3)), f'({int(round(100*(time()-deck_end_time)/(time()-deck_start_time),0))}%)')
+
 
 #Evaluation Functions
 def valname(x):
@@ -351,6 +360,20 @@ def evalhand(values,suits,vset,all_cards):
     if not x: x = numpair(values)
     if not x: x = hcard(values)
 
+    return x
+
+def count_hand_occurence(strength):
+    if strength < 2000: hand_occurence[0]+=1
+    elif strength < 3000: hand_occurence[1]+=1
+    elif strength < 4000: hand_occurence[2]+=1
+    elif strength < 5000: hand_occurence[3]+=1
+    elif strength < 6000: hand_occurence[4]+=1
+    elif strength < 7000: hand_occurence[5]+=1
+    elif strength < 8000: hand_occurence[6]+=1
+    elif strength < 9000: hand_occurence[7]+=1
+    elif strength < 10000: hand_occurence[8]+=1
+    elif strength == 10000: hand_occurence[9]+=1
+
 
 #Count Hand Occurence
 hand_occurence = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0}
@@ -359,54 +382,23 @@ ho_names = ['High Card: ','Pair: ','Two-Pair: ','Three of a Kind: ','Straight: '
 drawcards, h_strength = {}, {}
 
 #User Input
-decks,x,hnumber,show_strength = get_inputs()
+decks, cards_per_hand, hnumber, show_strength = get_inputs()
 deck_start_time = time()
 
 #Create Decks
 deck = Deck()
 deck_end_time = time()
 
-#Main Loop
+#Hand Print Loop
 for h_inc in range(hnumber):
-    print(f"\nPlayer {h_inc + 1}'s hand:")
-    user_hand = deck.draw(x)
+    user_hand = print_hand(cards_per_hand)
     values,vset,suits,all_cards = determine(user_hand)
-    print("| ",end="")
-    for c_x in user_hand: print(user_hand[c_x],end=" | ")
 
-    evalhand(values,suits,vset,all_cards)
+    exact_hand = evalhand(values,suits,vset,all_cards)
+    print('\n'+exact_hand,end=" "); ss()
 
-    if strength < 2000:
-        print('\n'+hcard(values),end=" "); ss()
-        hand_occurence[0]+=1
-    elif strength < 3000:
-        print('\n'+numpair(values),end=" "); ss()
-        hand_occurence[1]+=1
-    elif strength < 4000:
-        print('\n'+numpair(values),end=" "); ss()
-        hand_occurence[2]+=1
-    elif strength < 5000:
-        print('\n'+trip(values),end=" "); ss()
-        hand_occurence[3]+=1
-    elif strength < 6000:
-        print('\n'+straight(vset),end=" "); ss()
-        hand_occurence[4]+=1
-    elif strength < 7000:
-        print('\n'+flush(suits,all_cards),end=" "); ss()
-        hand_occurence[5]+=1
-    elif strength < 8000:
-        print('\n'+fullhouse(values),end=" "); ss()
-        hand_occurence[6]+=1
-    elif strength < 9000:
-        print('\n'+quads(values),end=" "); ss()
-        hand_occurence[7]+=1
-    elif strength < 10000:
-        print('\n'+straightflush(suits,vset,all_cards),end=" "); ss()
-        hand_occurence[8]+=1
-    elif strength == 10000:
-        print('\n'+straightflush(suits,vset,all_cards),end=" "); ss()
-        hand_occurence[9]+=1
+    count_hand_occurence(strength)
 
     h_strength[h_inc] = strength
 
-adv()
+post_draw()
