@@ -402,13 +402,12 @@ deck_end_time = time()
 for h_inc in range(hnumber):
     user_hand = deck.draw(cards_per_hand)
     print_hand(user_hand)
-    values,vset,suits,all_cards = determine(user_hand)
 
+    values,vset,suits,all_cards = determine(user_hand)
     exact_hand = evalhand(values,suits,vset,all_cards)
     print('\n'+exact_hand,end=" "); ss()
 
     count_hand_occurence(strength)
-
     h_strength[h_inc] = strength
 
 post_draw()
