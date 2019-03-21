@@ -164,13 +164,10 @@ def get_inputs():
 
     return (decks_,cph_,hnumber_,sstrength_)
 
-def print_hand(x):
+def print_hand(user_hand):
     print(f"\nPlayer {h_inc + 1}'s hand:")
-    user_hand = deck.draw(x)
     print("| ",end="")
     for c_x in user_hand: print(user_hand[c_x],end=" | ")
-
-    return user_hand
 
 
 def post_draw():
@@ -403,7 +400,8 @@ deck_end_time = time()
 
 #Hand Print Loop
 for h_inc in range(hnumber):
-    user_hand = print_hand(cards_per_hand)
+    user_hand = deck.draw(cards_per_hand)
+    print_hand(user_hand)
     values,vset,suits,all_cards = determine(user_hand)
 
     exact_hand = evalhand(values,suits,vset,all_cards)
