@@ -4,8 +4,6 @@ from enum import Enum
 from time import time
 from random import shuffle
 from math import floor
-from sys import exit
-
 
 class Card:
     """A class containing the value and suit for each card"""
