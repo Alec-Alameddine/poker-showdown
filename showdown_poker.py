@@ -133,7 +133,7 @@ def get_inputs():
 
     return (decks_,cph_,hnumber_,sstrength_)
 
-def print_hand(user_hand):
+def print_hand(user_hand,h_inc):
     """Pretty prints a single hand"""
     print(f"\nPlayer {h_inc + 1}'s hand:")
     print("| ",end="")
@@ -335,34 +335,21 @@ def evalhand(values,suits,vset,all_cards):
 
     return x
 
-def count_hand_occurence(strength):
-    """Adjusts hand occurence based on the strength of the current hand"""
-    if strength < 2000: hand_occurence[0]+=1
-    elif strength < 3000: hand_occurence[1]+=1
-    elif strength < 4000: hand_occurence[2]+=1
-    elif strength < 5000: hand_occurence[3]+=1
-    elif strength < 6000: hand_occurence[4]+=1
-    elif strength < 7000: hand_occurence[5]+=1
-    elif strength < 8000: hand_occurence[6]+=1
-    elif strength < 9000: hand_occurence[7]+=1
-    elif strength < 10000: hand_occurence[8]+=1
-    elif strength == 10000: hand_occurence[9]+=1
-
 #Main Function
 def showdown_poker():
-    for h_inc in range(hnumber): #Hand Print Loop
+    for h_inc in range(hnumber):
         user_hand = deck.draw(cards_per_hand)
-        print_hand(user_hand)
+        print_hand(user_hand,h_inc)
 
         values,vset,suits,all_cards = determine(user_hand)
         exact_hand = evalhand(values,suits,vset,all_cards)
         print('\n'+exact_hand,end=" "); ss()
 
-        count_hand_occurence(strength)
+        hand_occurence[int(floor(strength/1000-1))]+=1
         h_strength[h_inc] = strength
 
-    post_draw()
 
+    post_draw()
 
 hand_occurence = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0}
 ho_names = ['High Card: ','Pair: ','Two-Pair: ','Three of a Kind: ','Straight: ','Flush: ','Full House: ','Four of a Kind: ','Straight Flush: ','Royal Flush: ']
