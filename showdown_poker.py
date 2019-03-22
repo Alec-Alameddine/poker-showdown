@@ -4,11 +4,12 @@ from enum import Enum
 from time import time
 from random import shuffle
 from math import floor
+from sys import exit
 
 
 class Card:
     """A class containing the value and suit for each card"""
-    def __init__ (self,value,suit):
+    def __init__ (self, value, suit):
         self.value = value
         self.suit = suit
         self.vname = vname[value]
@@ -37,7 +38,7 @@ class Deck:
                     self.cards.append(Card(val,suit))
         shuffle(self.cards)
 
-    def draw(self,x):
+    def draw(self, x):
         """Generate a hand of x cards"""
         for y in range(x):
             drawcards[y] = self.cards.pop()
@@ -65,7 +66,7 @@ def determine(hand):
         vset.add(hand[x].value)
         suits.append(hand[x].suit)
         all_cards.append(hand[x])
-    return sorted(values,reverse=True),vset,suits,all_cards
+    return sorted(values, reverse=True),vset,suits,all_cards
 
 # Message/Text Functions
 def ss():
@@ -73,7 +74,7 @@ def ss():
     if show_strength: print(f'[{round(strength/10000,6)}]')
     else: print()
 
-def hnumber(max_v,msg):
+def hnumber(max_v, msg):
     """Returns the number of hands (int) to be generated given the maximum hands that can be generated"""
     while True:
         try:
@@ -191,7 +192,7 @@ def numpair(values):
         return f'Pair of {vname[pairs[0]]}s'
     if len(pairs) >= 2:
         vps = values.copy()
-        pairs = sorted(pairs,reverse=True)
+        pairs = sorted(pairs, reverse=True)
         for _ in range(2):
             vps.remove(pairs[0]); vps.remove(pairs[1])
         strength = (BaseStrength.TWO_PAIR.value + 10*int(pairs[0]) + int(pairs[1])) + .1*vps[0]
@@ -212,7 +213,7 @@ def trip(values):
         strength = BaseStrength.SET.value + 10*trips[0] + vs[0] + .1*vs[1]
         return f'Set of {vname[trips[0]]}s'
 
-def straight(vset,get_vals=False):
+def straight(vset, get_vals=False):
     """Returns the name of a straight hand (string) given a set of the hand's card values.
     Returns False if a straight is not present within the hand. Also changes hand strength accordingly.
     If get_vals is true, straight() does not change strength and returns the values present in a straight."""
@@ -250,7 +251,7 @@ def flush(suits,all_cards):
     in the hand. Returns False if a flush is not present within the hand. Also changes hand strength accordingly."""
     global strength
     flushes = [suit for suit in suits if suits.count(suit) >= 5]
-    if flushes: flushes_vals = sorted([card.value for card in all_cards if card.suit == flushes[0]],reverse=True)
+    if flushes: flushes_vals = sorted([card.value for card in all_cards if card.suit == flushes[0]], reverse=True)
     if not flushes:
         return False
     else:
@@ -263,13 +264,14 @@ def fullhouse(values):
     """Returns the name of a filled up (string) hand given a list of the hand's card values.
     Returns False if a full house is not present within the hand. Also changes hand strength accordingly."""
     global strength
-    trips = list(dict.fromkeys(sorted([val for val in values if values.count(val) == 3],reverse=True)))
-    if not trips:
+    trips = list(dict.fromkeys(sorted([val for val in values if values.count(val) == 3], reverse=True)))
+
+    if not trips or (len(trips) == 1 and not pairs):
         return False
 
-    pairs = sorted([val for val in values if values.count(val) == 2],reverse=True)
+    pairs = sorted([val for val in values if values.count(val) == 2], reverse=True)
 
-    if pairs and trips:
+    if pairs:
         strength = BaseStrength.FULL_HOUSE.value + 10*trips[0] + pairs[0]
         fh = f'{vname[trips[0]]}s full of {vname[pairs[0]]}s'
 
@@ -281,9 +283,6 @@ def fullhouse(values):
         else:
             strength = BaseStrength.FULL_HOUSE.value + 10*trips[0] + trips[1]
             fh = f'{vname[trips[0]]}s full of {vname[trips[1]]}s'
-
-    if len(trips) == 1 and not pairs:
-        return False
 
     return fh
 
@@ -376,6 +375,6 @@ deck = Deck()
 deck_end_time = time()
 
 
-
 if __name__ == '__main__':
     showdown_poker()
+
