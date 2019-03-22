@@ -30,7 +30,7 @@ class Deck:
         self.create()
 
     def create(self):
-        """Generate all of the decks."""
+        """Generate all of the cards"""
         for _ in range(decks):
             for val in (2,3,4,5,6,7,8,9,10,11,12,13,14):
                 for suit in ("Hearts", "Spades", "Clubs", "Diamonds"):
