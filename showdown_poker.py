@@ -4,7 +4,7 @@ from enum import Enum
 from time import time
 from math import floor
 
-DEBUG = False
+DEBUG = True
 
 
 class Card:
@@ -21,9 +21,11 @@ class Card:
 
     def __repr__(self):
         """Represents each card in two characters"""
-        if self.value < 10:
+        if self.value == 0:
+            return 'EMPTY'
+        elif 0 < self.value < 10:
             return f'{self.value}{self.suit[0].lower()}'
-        if self.value >= 10:
+        elif self.value >= 10:
             return f'{self.vname[0]}{self.suit[0].lower()}'
 
     def __eq__(self, other_card):
@@ -54,7 +56,7 @@ class Deck:
 
     def draw(self, c):
         """Generate a hand of c cards"""
-        y = 0
+        y, s = 0, 0
         while y < c:
             if self.cards[-1] not in drawcards.values():
                 drawcards[y] = self.cards.pop()
@@ -62,6 +64,10 @@ class Deck:
             else:
                 i = randint(0, (len(self.cards) - 1))
                 self.cards[i], self.cards[-1] = self.cards[-1], self.cards[i]
+                s += 1
+                if s == 2500:
+                    drawcards[y] = Card(0,0)
+                    y += 1
 
         return drawcards
 
@@ -90,8 +96,8 @@ def determine(hand):
         all_cards.append(hand[x])
     return sorted(values, reverse=True), vset, suits, all_cards
 
-# Message/Text Functions
 
+# Message/Text Functions
 
 def ss():
     """Prints hand strength if advanced stats are on"""
@@ -411,8 +417,8 @@ ho_names = ('High Card: ', 'Pair: ', 'Two-Pair: ', 'Three of a Kind: ', 'Straigh
 hand_occurrence = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0}
 
 value_names = {1: 'Ace', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine',
-               10: 'Ten', 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace'}
-suit_names = {"Hearts": '♥', "Spades": '♠', "Clubs": '♣', "Diamonds": '♦'}
+               10: 'Ten', 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace', 0: 'CANNOT DRAW NON-DUPE'}
+suit_names = {"Hearts": '♥', "Spades": '♠', "Clubs": '♣', "Diamonds": '♦', 0: ''}
 
 drawcards, h_strength = {}, {}
 
