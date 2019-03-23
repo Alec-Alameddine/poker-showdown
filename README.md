@@ -25,7 +25,7 @@ The third prompt asks the user how many players he wants to generate hands for:
 How many players are there (max __)?
 ```
 
-The maximum value is dependent on the amount of cards per hand and also the amount of decks generated. The minimum value is 1, and the only valid input is an integer between 1 and the maximum value (inclusive), which will be displayed in the prompt. 
+The maximum input is dependent on the amount of cards per hand and also the amount of decks generated. The minimum input is 1. Any integer between 1 and the maximum value (inclusive), which will be displayed in the prompt, is valid. 
 
 ### Advanced Stats
 The final prompt xxx (if off just w/l shown, if on ___ shown)
