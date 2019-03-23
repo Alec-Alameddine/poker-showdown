@@ -29,3 +29,6 @@ xxx (best 5)
 
 ### Holdem Hand Ranking
 xxx (1. rf --> 10 hc)
+
+### Examples
+xxx
