@@ -4,7 +4,7 @@ from enum import Enum
 from time import time
 from math import floor
 
-DEBUG = True
+DEBUG = False
 
 
 class Card:
