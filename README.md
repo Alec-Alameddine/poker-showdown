@@ -1,4 +1,4 @@
-# Hold'Em Showdown Poker
+# Stud Showdown
 
 This command-line python program generates (5-52 card) poker hands and compares their strengths using Texas Hold'Em hand ranking rules. The user can specify how many cards are in each hand, as well as how many decks should be generated and hands drawn.
 
@@ -41,3 +41,9 @@ xxx (1. rf --> 10 hc, kickers)
 
 ### Examples
 xxx
+
+### More Resources
+
+* [PokerStars](https://www.pokerstarsschool.com/article/Poker-Hand-Rankings) - Hand rankings
+* [Pokerlistings](https://www.pokerlistings.com/strategy/beginner/how-to-determine-the-winning-hand) - How to determine the best hand
+* [Cardplayer](https://www.cardplayer.com/poker-tools/odds-calculator/seven-card-stud) - Seven-Card Calculator
