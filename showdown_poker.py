@@ -1,26 +1,42 @@
-import copy
 import distutils.core
+from random import shuffle, randint
 from enum import Enum
 from time import time
-from random import shuffle
 from math import floor
+
+DEBUG = False
+
 
 class Card:
     """A class containing the value and suit for each card"""
-    def __init__ (self, value, suit):
+    def __init__(self, value, suit):
         self.value = value
         self.suit = suit
-        self.vname = vname[value]
-        self.sname = sname[suit]
+        self.vname = value_names[value]
+        self.sname = suit_names[suit]
 
     def __str__(self):
+        """Pretty-prints each card"""
         return f'{self.sname}{self.vname}{self.sname}'
 
     def __repr__(self):
-        if self.value <= 10:
+        """Represents each card in two characters"""
+        if self.value < 10:
             return f'{self.value}{self.suit[0].lower()}'
-        if self.value > 10:
+        if self.value >= 10:
             return f'{self.vname[0]}{self.suit[0].lower()}'
+
+    def __eq__(self, other_card):
+        """Returns True if the value and suit for two cards are equal"""
+        if not isinstance(other_card, self.__class__):
+            return False
+
+        return self.value == other_card.value and self.suit == other_card.suit
+
+    def __hash__(self):
+        """Defines card object hashing for the purpose of comparing equality"""
+        return hash((self.value, self.suit))
+
 
 class Deck:
     """A class containing all of the cards that can be drawn as part of a hand"""
@@ -31,17 +47,24 @@ class Deck:
     def create(self):
         """Generate all of the cards"""
         for _ in range(decks):
-            for val in (2,3,4,5,6,7,8,9,10,11,12,13,14):
+            for val in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14):
                 for suit in ("Hearts", "Spades", "Clubs", "Diamonds"):
-                    self.cards.append(Card(val,suit))
+                    self.cards.append(Card(val, suit))
         shuffle(self.cards)
 
-    def draw(self, x):
-        """Generate a hand of x cards"""
-        for y in range(x):
-            drawcards[y] = self.cards.pop()
+    def draw(self, c):
+        """Generate a hand of c cards"""
+        y = 0
+        while y < c:
+            if self.cards[-1] not in drawcards.values():
+                drawcards[y] = self.cards.pop()
+                y += 1
+            else:
+                i = randint(0, (len(self.cards) - 1))
+                self.cards[i], self.cards[-1] = self.cards[-1], self.cards[i]
 
         return drawcards
+
 
 class BaseStrength(Enum):
     """The minimum strength value for each type of hand"""
@@ -64,13 +87,15 @@ def determine(hand):
         vset.add(hand[x].value)
         suits.append(hand[x].suit)
         all_cards.append(hand[x])
-    return sorted(values, reverse=True),vset,suits,all_cards
+    return sorted(values, reverse=True), vset, suits, all_cards
 
 # Message/Text Functions
+
 def ss():
     """Prints hand strength if advanced stats are on"""
     if show_strength: print(f'[{round(strength/10000,6)}]')
     else: print()
+
 
 def hnumber(max_v, msg):
     """Returns the number of hands (int) to be generated given the maximum hands that can be generated"""
@@ -86,6 +111,7 @@ def hnumber(max_v, msg):
         except ValueError:
             print('Please enter a positive integer.')
 
+
 def decks(msg):
     """Returns the number of decks (int) to be generated"""
     while True:
@@ -97,6 +123,7 @@ def decks(msg):
                 print('Please enter a positive integer.')
         except ValueError:
             print('Please enter a positive integer.')
+
 
 def cph(msg):
     """Returns the number of cards (int) to be included in each hand"""
@@ -110,7 +137,8 @@ def cph(msg):
         except ValueError:
             print('Please enter a positive integer between 5 and 52.')
 
-def sstrength(msg):
+
+def s_strength(msg):
     """Returns a boolean indicating whether advanced stats are shown"""
     while True:
         try:
@@ -122,27 +150,33 @@ def sstrength(msg):
         except ValueError:
             print('Please indicate whether you\'d like to show advanced stats')
 
+
 def get_inputs():
-    """Returns a tuple containing the integer outputs of
-    decks(), cph(), hnumber() and the boolean output of sstrength()"""
+    """Returns the integer outputs of decks(), cph(), hnumber() and the boolean output of s_strength()"""
     decks_ = decks('How many decks are there? ')
     cph_ = cph('How many cards per hand? ')
     max_v = floor((decks_*52)/cph_)
-    hnumber_ = hnumber(max_v,f'How many players are there (max {floor((decks_*52)/cph_)})? ')
-    sstrength_ = sstrength("Would you like to show advanced stats? ")
+    hnumber_ = hnumber(max_v, f'How many players are there (max {floor((decks_*52)/cph_)})? ')
+    sstrength_ = s_strength("Would you like to show advanced stats? ")
 
-    return (decks_,cph_,hnumber_,sstrength_)
+    return decks_, cph_, hnumber_, sstrength_
+
 
 def print_hand(user_hand,h_inc):
-    """Pretty prints a single hand"""
+    """Pretty-prints a single hand"""
     print(f"\nPlayer {h_inc + 1}'s hand:")
-    print("| ",end="")
-    for c_x in user_hand: print(user_hand[c_x],end=" | ")
+    print("| ", end="")
+    if DEBUG:
+        for c_x in user_hand: print(repr(user_hand[c_x]), end=" | ")
+        if sorted(list(set(user_hand))) != sorted(user_hand):
+            print("DUPLICATE", end="")
+    else:
+        for c_x in user_hand: print(user_hand[c_x], end=" | ")
 
 
 def post_draw():
     """Displays various stats if advanced stats are on
-    and displays the strongest and weakest hand if advanced stats is off"""
+    and displays the strongest and weakest hand if advanced stats are off"""
     hss = sorted(h_strength.items(), key=lambda k: k[1], reverse=True)
 
     if not show_strength:
@@ -151,31 +185,33 @@ def post_draw():
 
     if show_strength:
 
-        print(f'\n\n\nPlayer {hss[0][0]+1} has the strongest hand! [{round(hss[0][1]/10000,6)}]')
-        print(f'Player {hss[hnumber-1][0] + 1} has the weakest hand :( [{round(hss[hnumber-1][1]/10000,6)}]')
+        print(f'\n\n\nPlayer {hss[0][0]+1} has the strongest hand! [{round(hss[0][1]/10000, 6)}]')
+        print(f'Player {hss[hnumber-1][0]+1} has the weakest hand :( [{round(hss[hnumber-1][1]/10000, 6)}]')
 
-        print('\n\n\n\n\nHand Occurence:\n')
-        for x in range(10): print(ho_names[x],hand_occurence[x],f'({round(100*hand_occurence[x]/len(hss),2)}%)')
+        print('\n\n\n\n\nHand occurrence:\n')
+        for x in range(10): print(ho_names[x], hand_occurrence[x], f'({round(100*hand_occurrence[x]/len(hss), 2)}%)')
 
         print('\n\n\n\n\nFull Player Ranking:\n')
-        for x in range(len(hss)): print(f'{x+1}.',f'Player {hss[x][0]+1}',f'[{round(hss[x][1]/10000,6)}]')
+        for x in range(len(hss)): print(f'{x+1}.', f'Player {hss[x][0]+1}', f'[{round(hss[x][1]/10000, 6)}]')
 
-        print('\n\n\nComplete Execution Time:', "%ss" % (round(time()-deck_start_time,2)))
-        print('Deck Build Time:', '%ss' % (round(deck_end_time-deck_start_time,2)),
-              f'({int(round(100*(deck_end_time-deck_start_time)/(time()-deck_start_time),0))}%)')
-        print('Hand Build Time:', '%ss' % (round(time()-deck_end_time,2)),
-              f'({int(round(100*(time()-deck_end_time)/(time()-deck_start_time),0))}%)')
+        print('\n\n\nComplete Execution Time:', "%ss" % (round(time()-deck_start_time, 2)))
+        print('Deck Build Time:', '%ss' % (round(deck_end_time-deck_start_time, 2)),
+              f'({int(round(100*(deck_end_time-deck_start_time)/(time()-deck_start_time), 0))}%)')
+        print('Hand Build Time:', '%ss' % (round(time()-deck_end_time, 2)),
+              f'({int(round(100*(time()-deck_end_time)/(time()-deck_start_time), 0))}%)')
 
 
 # Evaluation Functions
-def hcard(values):
+
+def h_card(values):
     """Returns the name of a high-card hand (string) given a list of the hand's card values.
     Also changes hand strength accordingly."""
     global strength
     strength = BaseStrength.HIGH_CARD.value + 10*values[0] + values[1] + .1*values[2] + .01*values[3] + .001*values[4]
-    return f'High-Card {vname[values[0]]}'
+    return f'High-Card {value_names[values[0]]}'
 
-def numpair(values):
+
+def num_pair(values):
     """Returns the name of a one-pair or two-pair hand (string) given a list of the hand's card values.
     Returns False if one-pair or two-pair is not present within the hand. Also changes hand strength accordingly."""
     global strength
@@ -186,15 +222,17 @@ def numpair(values):
         vp = values.copy()
         for _ in range(2):
             vp.remove(pairs[0])
-        strength = BaseStrength.PAIR.value + 10*pairs[0] + vp[0] + .1*vp[1] + .01*vp[2];
-        return f'Pair of {vname[pairs[0]]}s'
+        strength = BaseStrength.PAIR.value + 10*pairs[0] + vp[0] + .1*vp[1] + .01*vp[2]
+
+        return f'Pair of {value_names[pairs[0]]}s'
     if len(pairs) >= 2:
         vps = values.copy()
         pairs = sorted(pairs, reverse=True)
         for _ in range(2):
             vps.remove(pairs[0]); vps.remove(pairs[1])
         strength = (BaseStrength.TWO_PAIR.value + 10*int(pairs[0]) + int(pairs[1])) + .1*vps[0]
-        return f'{vname[pairs[0]]}s and {vname[pairs[1]]}s'
+
+        return f'{value_names[pairs[0]]}s and {value_names[pairs[1]]}s'
 
 
 def trip(values):
@@ -209,7 +247,9 @@ def trip(values):
         for _ in range(3):
             vs.remove(trips[0])
         strength = BaseStrength.SET.value + 10*trips[0] + vs[0] + .1*vs[1]
-        return f'Set of {vname[trips[0]]}s'
+
+        return f'Set of {value_names[trips[0]]}s'
+
 
 def straight(vset, get_vals=False):
     """Returns the name of a straight hand (string) given a set of the hand's card values.
@@ -225,8 +265,8 @@ def straight(vset, get_vals=False):
                 count += 1
                 max_c = rank
                 if count == 5:
-                    strength = BaseStrength.STRAIGHT.value + 10*min(vset)
-                    straight = f'Straight from {vname[max_c-4]} to {vname[max_c]}'
+                    strength = BaseStrength.STRAIGHT.value + 70*max_c
+                    straight = f'Straight from {value_names[max_c-4]} to {value_names[max_c]}'
                     break
             else: count = 0
         return straight
@@ -244,7 +284,8 @@ def straight(vset, get_vals=False):
                 sset = set()
         raise Exception('No SSET')
 
-def flush(suits,all_cards):
+
+def flush(suits, all_cards):
     """Returns the name of a flush hand (string) given a list of the hand's card suits and a list of all the cards
     in the hand. Returns False if a flush is not present within the hand. Also changes hand strength accordingly."""
     global strength
@@ -255,34 +296,36 @@ def flush(suits,all_cards):
     else:
         strength = BaseStrength.FLUSH.value + 10*flushes_vals[0] + flushes_vals[1] + .1*flushes_vals[2] + \
                    .01*flushes_vals[3] + .001*flushes_vals[4]
-        flush = f'{vname[max(flushes_vals)]}-High flush of {flushes[0]}'
+        flush = f'{value_names[max(flushes_vals)]}-High flush of {flushes[0]}'
+
     return flush
 
-def fullhouse(values):
+
+def full_house(values):
     """Returns the name of a filled up (string) hand given a list of the hand's card values.
     Returns False if a full house is not present within the hand. Also changes hand strength accordingly."""
     global strength
     trips = list(dict.fromkeys(sorted([val for val in values if values.count(val) == 3], reverse=True)))
+    pairs = sorted([val for val in values if values.count(val) == 2], reverse=True)
 
     if not trips or (len(trips) == 1 and not pairs):
         return False
 
-    pairs = sorted([val for val in values if values.count(val) == 2], reverse=True)
-
     if pairs:
         strength = BaseStrength.FULL_HOUSE.value + 10*trips[0] + pairs[0]
-        fh = f'{vname[trips[0]]}s full of {vname[pairs[0]]}s'
+        fh = f'{value_names[trips[0]]}s full of {value_names[pairs[0]]}s'
 
     if len(trips) > 1:
         if pairs:
             if trips[1] > pairs[0]:
                 strength = BaseStrength.FULL_HOUSE.value + 10*trips[0] + trips[1]
-                fh = f'{vname[trips[0]]}s full of {vname[trips[1]]}s'
+                fh = f'{value_names[trips[0]]}s full of {value_names[trips[1]]}s'
         else:
             strength = BaseStrength.FULL_HOUSE.value + 10*trips[0] + trips[1]
-            fh = f'{vname[trips[0]]}s full of {vname[trips[1]]}s'
+            fh = f'{value_names[trips[0]]}s full of {value_names[trips[1]]}s'
 
     return fh
+
 
 def quads(values):
     """Returns the name of a four-of-a-kind hand (string) given a list of the hand's card values.
@@ -295,14 +338,16 @@ def quads(values):
         vq = values.copy()
         for _ in range(4): vq.remove(quads[0])
         strength = BaseStrength.QUADS.value + 10*quads[0] + vq[0]
-        return f'Quad {vname[quads[0]]}s'
 
-def straightflush(suits,vset,all_cards):
+        return f'Quad {value_names[quads[0]]}s'
+
+
+def straight_flush(suits, all_cards):
     """Returns the name of a straight or royal flush hand (string) given a list of the hand's card suits,
     a set of the hand's card values, and a list of all the cards in the hand. Returns False if a straight or royal flush
     is not present within the hand. Also changes hand strength accordingly."""
     global strength
-    straight_ = None
+    straight_: str = None
 
     flushes = [suit for suit in suits if suits.count(suit) >= 5]
     if flushes:
@@ -310,13 +355,13 @@ def straightflush(suits,vset,all_cards):
 
         if straight(flushes_vals):
             straight_vals = straight(flushes_vals, True)
-            if {14,10,11,12,13} <= straight_vals: straight_ = "Royal"
-            elif {14,2,3,4,5} <= straight_vals: straight_ = "Wheel"
+            if {14, 10, 11, 12, 13} <= straight_vals: straight_ = "Royal"
+            elif {14, 2, 3, 4, 5} <= straight_vals: straight_ = "Wheel"
             else: straight_ = "Normal"
 
     if straight_ == "Normal":
-        strength = BaseStrength.STRAIGHT_FLUSH.value + 10*max(flushes_vals)
-        sf = f'{vname[max(straight_vals)]}-High Straight Flush of {flushes[0]}'
+        strength = BaseStrength.STRAIGHT_FLUSH.value + 70*max(flushes_vals)
+        sf = f'{value_names[max(straight_vals)]}-High Straight Flush of {flushes[0]}'
     elif straight_ == "Wheel":
         strength = BaseStrength.STRAIGHT_FLUSH.value
         sf = f'Five-High Straight Flush of {flushes[0]}'
@@ -324,45 +369,48 @@ def straightflush(suits,vset,all_cards):
         strength = BaseStrength.ROYAL_FLUSH.value
         sf = f'Royal Flush of {flushes[0]}'
     else:
-        sf = False
+        return False
+
     return sf
+
 
 def evalhand(values, suits, vset, all_cards):
     """Returns the exact type of hand (string) that is present given a list of values and suits within the hand,
     a set of values within the hand, and a list of all the cards in the hand"""
-    x = straightflush(suits, vset, all_cards)
+    x = straight_flush(suits, all_cards)
     if not x: x = quads(values)
-    if not x: x = fullhouse(values)
+    if not x: x = full_house(values)
     if not x: x = flush(suits, all_cards)
-    if not x: x = straight(values)
+    if not x: x = straight(vset)
     if not x: x = trip(values)
-    if not x: x = numpair(values)
-    if not x: x = hcard(values)
+    if not x: x = num_pair(values)
+    if not x: x = h_card(values)
 
     return x
 
-# Main Function
-def showdown_poker():
+
+def showdown_poker():  # Main Function
     for h_inc in range(hnumber):
         user_hand = deck.draw(cards_per_hand)
-        print_hand(user_hand,h_inc)
+        print_hand(user_hand, h_inc)
 
-        values,vset,suits,all_cards = determine(user_hand)
-        exact_hand = evalhand(values,suits,vset,all_cards)
+        values, vset, suits, all_cards = determine(user_hand)
+        exact_hand = evalhand(values, suits, vset, all_cards)
         print('\n'+exact_hand, end=" "); ss()
 
-        hand_occurence[int(floor(strength/1000-1))]+=1
+        hand_occurrence[floor(strength/1000-1)] += 1
         h_strength[h_inc] = strength
 
     post_draw()
 
-hand_occurence = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0}
+
 ho_names = ('High Card: ', 'Pair: ', 'Two-Pair: ', 'Three of a Kind: ', 'Straight: ', 'Flush: ', 'Full House: ',
             'Four of a Kind: ', 'Straight Flush: ', 'Royal Flush: ')
+hand_occurrence = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0}
 
-vname = {1: 'Ace', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine', 10: 'Ten',
-         11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace'}
-sname = {"Hearts": '♥', "Spades": '♠', "Clubs": '♣', "Diamonds": '♦'}
+value_names = {1: 'Ace', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine',
+               10: 'Ten', 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace'}
+suit_names = {"Hearts": '♥', "Spades": '♠', "Clubs": '♣', "Diamonds": '♦'}
 
 drawcards, h_strength = {}, {}
 
@@ -375,4 +423,3 @@ deck_end_time = time()
 
 if __name__ == '__main__':
     showdown_poker()
-
