@@ -6,14 +6,14 @@ This command-line python program generates (5-52 card) poker hands and compares 
 There are four options that the user can specify. He can choose, in order of input, how many decks to generate, how many cards will be in each hand, how many players there are (equivalent to amount of hands that will be drawn) and whether or not to show advanced stats. In order to input a value, the user must enter it into the prompt and then hit enter or return.
 
 ### Number of decks
-The first prompt the user will see asks how many decks the user wants to generate:
+The first prompt asks how many decks the user wants to generate:
 ```
 How many decks are there? 
 ```
 Any positive integer is valid input, but very large numbers may be too taxing for some machines. An input of 1 generates a one standard 52-card, Two to Ace deck without any Jokers or wild cards.
 
 ### Cards per Hand
-The second prompt the user will see asks how many cards the user wants to include in each hand:
+The second prompt asks the user how many cards he wants to include in each hand:
 ```
 How many cards per hand?
 ```
