@@ -20,10 +20,15 @@ How many cards per hand?
 Any integer between 5 and 52 (inclusive) is valid input. Since Texas Hold'Em evaluation rules consider the user's best possible five-card combination (this is explained in more depth in the Hand Evaluation Rules section) in order to rank his hand, a hand must contain at least 5 cards. Because each card in a hand must be unique, there can only be 52 cards in each hand, due to the fact that there are only 52 unique cards.
 
 ### Number of Players
-xxx
+The third prompt asks the user how many players he wants to generate hands for:
+```
+How many players are there (max __)?
+```
+
+The maximum value is dependent on the amount of cards per hand and also the amount of decks generated. The minimum value is 1, and the only valid input is an integer between 1 and the maximum value (inclusive), which will be displayed in the prompt. 
 
 ### Advanced Stats
-xxx (if off just w/l shown, if on ___ shown)
+The final prompt xxx (if off just w/l shown, if on ___ shown)
 
 ## Hand Evaluation
 xxx
