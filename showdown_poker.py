@@ -79,6 +79,7 @@ class BaseStrength(Enum):
     PAIR = 2000
     HIGH_CARD = 1000
 
+
 def determine(hand):
     """Returns a list of values, a set of values, a list of suits, and a list of cards within a hand."""
     values, vset, suits, all_cards = [], set(), [], []
@@ -90,6 +91,7 @@ def determine(hand):
     return sorted(values, reverse=True), vset, suits, all_cards
 
 # Message/Text Functions
+
 
 def ss():
     """Prints hand strength if advanced stats are on"""
@@ -162,7 +164,7 @@ def get_inputs():
     return decks_, cph_, hnumber_, sstrength_
 
 
-def print_hand(user_hand,h_inc):
+def print_hand(user_hand, h_inc):
     """Pretty-prints a single hand"""
     print(f"\nPlayer {h_inc + 1}'s hand:")
     print("| ", end="")
@@ -185,7 +187,7 @@ def post_draw():
 
     if show_strength:
 
-        print(f'\n\n\nPlayer {hss[0][0]+1} has the strongest hand! [{round(hss[0][1]/10000, 6)}]')
+        print(f'\n\n\nPlayer {hss[0][0] + 1} has the strongest hand! [{round(hss[0][1]/10000, 6)}]')
         print(f'Player {hss[hnumber-1][0]+1} has the weakest hand :( [{round(hss[hnumber-1][1]/10000, 6)}]')
 
         print('\n\n\n\n\nHand occurrence:\n')
