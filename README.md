@@ -10,7 +10,7 @@ The first prompt the user will see will ask how many decks the user wants to gen
 ```
 How many decks are there? 
 ```
-Any positive integer is valid input, but very large numbers may be too taxing for some machines. An input of 1 generates a single standard 52-card, Two to Ace deck without any Jokers or wild cards.
+Any positive integer is valid input, but very large numbers may be too taxing for some machines. An input of 1 generates a one standard 52-card, Two to Ace deck without any Jokers or wild cards.
 
 ### Cards per Hand
 xxx
