@@ -1,4 +1,4 @@
-# Showdown Poker
+# Hold'Em Showdown Poker
 
 This command-line python program generates (5-52 card) poker hands and compares their strengths. The user can specify how many cards are in each hand, as well as how many decks should be generated and hands drawn.
 
@@ -13,3 +13,19 @@ How many decks are there?
 Any positive integer is valid input, but very large numbers may be too taxing for some machines. An input of 1 generates a standard 52-card, Two to Ace deck without any Jokers or wild cards.
 
 ### Cards per Hand
+xxx
+
+### Number of Players
+xxx
+
+### Advanced Stats
+xxx (if off just w/l shown, if on ___ shown)
+
+## Hand Evaluation
+xxx
+
+### Hold'Em Hand Evaluation Rules
+xxx (best 5)
+
+### Holdem Hand Ranking
+xxx (1. rf --> 10 hc)
