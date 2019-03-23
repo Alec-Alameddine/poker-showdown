@@ -196,7 +196,7 @@ def post_draw():
         print(f'\n\n\nPlayer {hss[0][0] + 1} has the strongest hand! [{round(hss[0][1]/10000, 6)}]')
         print(f'Player {hss[hnumber-1][0]+1} has the weakest hand :( [{round(hss[hnumber-1][1]/10000, 6)}]')
 
-        print('\n\n\n\n\nHand occurrence:\n')
+        print('\n\n\n\n\nHand Occurrence:\n')
         for x in range(10): print(ho_names[x], hand_occurrence[x], f'({round(100*hand_occurrence[x]/len(hss), 2)}%)')
 
         print('\n\n\n\n\nFull Player Ranking:\n')
