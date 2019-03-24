@@ -1,4 +1,4 @@
-# Hold'Em Stud Showdown
+# Stud Showdown
 
 This command-line python program generates (5-52 card) poker hands and compares their strengths using Texas Hold'Em hand ranking rules. The user can specify how many cards are in each hand, as well as how many decks should be generated and hands drawn. The program mimics an N-card Stud game, where N is the number of cards per hand.
 
