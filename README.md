@@ -38,7 +38,7 @@ Any of these inputs is an indication that the user would not like to see advance
 
 If advanced stats are off, only the players with the best and worst hands are shown.
 
-If advanced stats are on, three other pieces of information are displayed following the first and last place player:
+If advanced stats are on, three pieces of information are displayed following the first and last place player:
 
 
 1. Hand occurence of the ten types of hands
