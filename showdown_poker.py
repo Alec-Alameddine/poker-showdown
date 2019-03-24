@@ -154,9 +154,9 @@ def s_strength(msg):
             if ss == 0 or ss == 1:
                 return ss
             else:
-                print('Please indicate whether you\'d like to show advanced stats')
+                print('Please indicate whether you\'d like to see advanced stats')
         except ValueError:
-            print('Please indicate whether you\'d like to show advanced stats')
+            print('Please indicate whether you\'d like to see advanced stats')
 
 
 def get_inputs():
@@ -165,7 +165,7 @@ def get_inputs():
     cph_ = cph('How many cards per hand? ')
     max_v = floor((decks_*52)/cph_)
     hnumber_ = hnumber(max_v, f'How many players are there (max {floor((decks_*52)/cph_)})? ')
-    sstrength_ = s_strength("Would you like to show advanced stats? ")
+    sstrength_ = s_strength("Would you like to see advanced stats? ")
 
     return decks_, cph_, hnumber_, sstrength_
 
