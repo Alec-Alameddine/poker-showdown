@@ -30,9 +30,11 @@ The maximum input is dependent on the amount of cards per hand and also the amou
 ### Advanced Stats
 The final prompt asks the user if he'd like to see advanced stats:
  ```
- Would you like to show advanced stats?
+ Would you like to see advanced stats?
  ```
-Any of these inputs will toggle advanced stats on: y, yes, t, true, on and 1. Any of these inputs will toggle advanced stats off: n, no, f, false, off and 0.
+Any of these inputs is an indication that the user would like to see advanced stats: y, yes, t, true, on and 1. 
+
+Any of these inputs is an indication that the user would not like to see advanced stats: n, no, f, false, off and 0.
 
 If advanced stats are off, only the players with the best and worst hands are shown.
 
