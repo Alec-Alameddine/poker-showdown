@@ -32,8 +32,18 @@ The final prompt asks the user if he'd like to see advanced stats:
  ```
  Would you like to show advanced stats?
  ```
-Any one of these inputs will toggle advanced stats on: [y, yes, t, true, on and 1]. false values are n, no, f, false, off and 0.
-(if off just w/l shown, if on ___ shown)
+Any of these inputs will toggle advanced stats on: y, yes, t, true, on and 1. Any of these inputs will toggle advanced stats off: n, no, f, false, off and 0.
+
+If advanced stats are off, only the players with the best and worst hands are shown.
+
+If advanced stats are on, three other pieces of information are displayed following the first and last place player:
+
+
+1. Hand occurence of the ten types of hands
+2. The full player ranking
+3. Execution time, including total execution time, deck build time, and hand build time.
+
+Additionally, hand strength, as determined by the program's hand-ranking algorithm, is displayed next to every hand and player ranking.
 
 ## Hand Evaluation
 xxx
