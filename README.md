@@ -61,6 +61,6 @@ xxx
 
 ### More Resources
 
-* [PokerStars](https://www.pokerstarsschool.com/article/Poker-Hand-Rankings) - Hand rankings
-* [Pokerlistings](https://www.pokerlistings.com/strategy/beginner/how-to-determine-the-winning-hand) - How to determine the best hand
+* [PokerStars](https://www.pokerstarsschool.com/article/Poker-Hand-Rankings) - Hand Rankings
+* [Pokerlistings](https://www.pokerlistings.com/strategy/beginner/how-to-determine-the-winning-hand) - How To Determine the Best Hand
 * [Cardplayer](https://www.cardplayer.com/poker-tools/odds-calculator/seven-card-stud) - Seven-Card Stud Calculator
