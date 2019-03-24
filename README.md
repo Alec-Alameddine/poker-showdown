@@ -45,7 +45,7 @@ If advanced stats are on, three pieces of information are displayed following th
 2. The full player ranking
 3. Execution time, including total execution time, deck build time, and hand build time.
 
-Additionally, hand strength, as determined by the program's hand-ranking algorithm, is displayed next to every hand and player ranking.
+Additionally, hand strength, as determined by the program's hand-ranking algorithm, is displayed next to every hand and player ranking. A hand strength of 1 represents the best possible hand, a Royal Flush.
 
 ## Hand Evaluation
 xxx
