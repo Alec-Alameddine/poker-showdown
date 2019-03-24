@@ -28,7 +28,12 @@ How many players are there (max __)?
 The maximum input is dependent on the amount of cards per hand and also the amount of decks generated. The minimum input is 1. Any integer between 1 and the maximum value (inclusive), which will be displayed in the prompt, is valid. 
 
 ### Advanced Stats
-The final prompt xxx (if off just w/l shown, if on ___ shown)
+The final prompt asks the user if he'd like to see advanced stats:
+ ```
+ Would you like to show advanced stats?
+ ```
+Any one of these inputs will toggle advanced stats on: [y, yes, t, true, on and 1]. false values are n, no, f, false, off and 0.
+(if off just w/l shown, if on ___ shown)
 
 ## Hand Evaluation
 xxx
