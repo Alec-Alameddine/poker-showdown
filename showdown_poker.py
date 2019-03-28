@@ -268,20 +268,21 @@ def straight(vset, get_vals=False):
 
     if not get_vals:
         straight = False
-        for rank in (14, *range(2, 15)):
+        for rank in reversed([14, *range(2, 15)]):
             if rank in vset:
                 count += 1
-                max_c = rank
+                min_c = rank
                 if count == 5:
-                    strength = BaseStrength.STRAIGHT.value + 70*max_c
-                    straight = f'Straight from {value_names[max_c-4]} to {value_names[max_c]}'
+                    max_c = min_c + 4
+                    strength = BaseStrength.STRAIGHT.value + 70*(max_c)
+                    straight = f'Straight from {value_names[min_c]} to {value_names[max_c]}'
                     break
             else: count = 0
         return straight
 
     if get_vals:
         sset = set()
-        for rank in (14, *range(2, 15)):
+        for rank in reversed([14, *range(2, 15)]):
             if rank in vset:
                 count += 1
                 sset.add(rank)
@@ -339,7 +340,7 @@ def quads(values):
     """Returns the name of a four-of-a-kind hand (string) given a list of the hand's card values.
     Returns False if quads are not present within the hand. Also changes hand strength accordingly."""
     global strength
-    quads = [val for val in values if values.count(val) >= 4]
+    quads = max([val for val in values if values.count(val) >= 4])
     if not quads:
         return False
     else:
