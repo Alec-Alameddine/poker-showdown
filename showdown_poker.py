@@ -101,7 +101,7 @@ def determine(hand):
 
 def ss():
     """Prints hand strength if advanced stats are on"""
-    if show_strength: print(f'[{round(strength/10000,6)}]')
+    if show_strength_: print(f'[{round(strength / 10000, 6)}]')
     else: print()
 
 
@@ -146,7 +146,7 @@ def cph(msg):
             print('Please enter a positive integer between 5 and 52.')
 
 
-def s_strength(msg):
+def show_strength(msg):
     """Returns a boolean indicating whether advanced stats are shown"""
     while True:
         try:
@@ -160,12 +160,12 @@ def s_strength(msg):
 
 
 def get_inputs():
-    """Returns the integer outputs of decks(), cph(), hnumber() and the boolean output of s_strength()"""
+    """Returns the integer outputs of decks(), cph(), hnumber() and the boolean output of show_strength()"""
     decks_ = decks('How many decks are there? ')
     cph_ = cph('How many cards per hand? ')
     max_v = floor((decks_*52)/cph_)
     hnumber_ = hnumber(max_v, f'How many players are there (max {floor((decks_*52)/cph_)})? ')
-    sstrength_ = s_strength("Would you like to see advanced stats? ")
+    sstrength_ = show_strength("Would you like to see advanced stats? ")
 
     return decks_, cph_, hnumber_, sstrength_
 
@@ -187,11 +187,11 @@ def post_draw():
     and displays the strongest and weakest hand if advanced stats are off"""
     hss = sorted(h_strength.items(), key=lambda k: k[1], reverse=True)
 
-    if not show_strength:
+    if not show_strength_:
         print(f'\n\n\nPlayer {hss[0][0] + 1} has the strongest hand!')
         print(f'Player {hss[hnumber-1][0]+1} has the weakest hand :(')
 
-    if show_strength:
+    if show_strength_:
 
         print(f'\n\n\nPlayer {hss[0][0] + 1} has the strongest hand! [{round(hss[0][1]/10000, 6)}]')
         print(f'Player {hss[hnumber-1][0]+1} has the weakest hand :( [{round(hss[hnumber-1][1]/10000, 6)}]')
@@ -340,10 +340,11 @@ def quads(values):
     """Returns the name of a four-of-a-kind hand (string) given a list of the hand's card values.
     Returns False if quads are not present within the hand. Also changes hand strength accordingly."""
     global strength
-    quads = max([val for val in values if values.count(val) >= 4])
+    quads = [val for val in values if values.count(val) >= 4]
     if not quads:
         return False
     else:
+        quads = max(quads)
         vq = values.copy()
         for _ in range(4): vq.remove(quads[0])
         strength = BaseStrength.QUADS.value + 10*quads[0] + vq[0]
@@ -423,7 +424,7 @@ suit_names = {"Hearts": '♥', "Spades": '♠', "Clubs": '♣', "Diamonds": '♦
 
 drawcards, h_strength = {}, {}
 
-decks, cards_per_hand, hnumber, show_strength = get_inputs()
+decks, cards_per_hand, hnumber, show_strength_ = get_inputs()
 deck_start_time = time()
 
 deck = Deck()
