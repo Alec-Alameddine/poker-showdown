@@ -273,7 +273,10 @@ def straight(vset, get_vals=False):
                 count += 1
                 min_c = rank
                 if count == 5:
-                    max_c = min_c + 4
+                    if min_c != 14:
+                    	max_c = min_c + 4
+                    else:
+                    	min_c, max_c = 1, 5
                     strength = BaseStrength.STRAIGHT.value + 70*(max_c)
                     straight = f'Straight from {value_names[min_c]} to {value_names[max_c]}'
                     break
@@ -346,8 +349,8 @@ def quads(values):
     else:
         quads = max(quads)
         vq = values.copy()
-        for _ in range(4): vq.remove(quads[0])
-        strength = BaseStrength.QUADS.value + 10*quads[0] + vq[0]
+        for _ in range(4): vq.remove(quads)
+        strength = BaseStrength.QUADS.value + 10*quads + vq[0]
 
         return f'Quad {value_names[quads[0]]}s'
 
