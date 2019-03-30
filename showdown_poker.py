@@ -249,7 +249,7 @@ class HandTypeEvaluation:
     @classmethod
     def straight_flush(cls, suits, all_cards):
         """Returns the name of a straight or royal flush hand (string) given a list of the hand's card suits,
-        a set of the hand's card values, and a list of all the cards in the hand. Returns False if a straight or royal 
+        a set of the hand's card values, and a list of all the cards in the hand. Returns False if a straight or royal
         flush is not present within the hand. Also changes hand strength accordingly."""
         straight_: str = None
 
@@ -276,6 +276,21 @@ class HandTypeEvaluation:
             return False
 
         return sf
+
+    @staticmethod
+    def evalhand(values, suits, vset, all_cards):
+        """Returns the exact type of hand (string) that is present given a list of values and suits within the hand,
+        a set of values within the hand, and a list of all the cards in the hand"""
+        x = HandTypeEvaluation.straight_flush(suits, all_cards)
+        if not x: x = HandTypeEvaluation.quads(values)
+        if not x: x = HandTypeEvaluation.full_house(values)
+        if not x: x = HandTypeEvaluation.flush(suits, all_cards)
+        if not x: x = HandTypeEvaluation.straight(vset)
+        if not x: x = HandTypeEvaluation.trip(values)
+        if not x: x = HandTypeEvaluation.num_pair(values)
+        if not x: x = HandTypeEvaluation.h_card(values)
+
+        return x
 
 
 def determine(hand):
@@ -401,28 +416,13 @@ def post_draw():
               f'({int(round(100*(time()-deck_end_time)/(time()-deck_start_time), 0))}%)')
 
 
-def evalhand(values, suits, vset, all_cards):
-    """Returns the exact type of hand (string) that is present given a list of values and suits within the hand,
-    a set of values within the hand, and a list of all the cards in the hand"""
-    x = HandTypeEvaluation.straight_flush(suits, all_cards)
-    if not x: x = HandTypeEvaluation.quads(values)
-    if not x: x = HandTypeEvaluation.full_house(values)
-    if not x: x = HandTypeEvaluation.flush(suits, all_cards)
-    if not x: x = HandTypeEvaluation.straight(vset)
-    if not x: x = HandTypeEvaluation.trip(values)
-    if not x: x = HandTypeEvaluation.num_pair(values)
-    if not x: x = HandTypeEvaluation.h_card(values)
-
-    return x
-
-
 def showdown_poker():  # Main Function
     for h_inc in range(hnumber):
         user_hand = deck.draw(cards_per_hand)
         print_hand(user_hand, h_inc)
 
         values, vset, suits, all_cards = determine(user_hand)
-        exact_hand = evalhand(values, suits, vset, all_cards)
+        exact_hand = HandTypeEvaluation.evalhand(values, suits, vset, all_cards)
         print('\n'+exact_hand, end=" "); ss()
 
         hand_occurrence[floor(HandTypeEvaluation.strength/1000-1)] += 1
