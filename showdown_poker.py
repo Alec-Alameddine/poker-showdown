@@ -1,8 +1,8 @@
 import distutils.core
+from math import floor
 from random import shuffle, randint, choice
 from enum import Enum
 from time import time
-from math import floor
 
 DEBUG = False
 
