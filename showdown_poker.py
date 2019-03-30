@@ -99,6 +99,185 @@ class BaseStrength(Enum):
     HIGH_CARD = 1000
 
 
+class HandTypeEvaluation:
+    """Contains functions that determine the name of and assign strength values to each hand."""
+
+    def __init__(self):
+        HandTypeEvaluation.strength = 0
+
+    @classmethod
+    def h_card(cls, values):
+        """Returns the name of a high-card hand (string) given a list of the hand's card values.
+        Also changes hand strength accordingly."""
+        cls.strength = BaseStrength.HIGH_CARD.value + 60*values[0] + 6*values[1] + .6*values[2] + .06*values[3] + .006*values[4]
+        return f'High-Card {value_names[values[0]]}'
+
+    @classmethod
+    def num_pair(cls, values):
+        """Returns the name of a one-pair or two-pair hand (string) given a list of the hand's card values.
+        Returns False if one-pair or two-pair is not present within the hand. Also changes hand strength accordingly."""
+        pairs = list(dict.fromkeys([val for val in values if values.count(val) == 2]))
+
+        if not pairs:
+            return False
+
+        if len(pairs) == 1:
+            vp = values.copy()
+            for _ in range(2):
+                vp.remove(pairs[0])
+            cls.strength = BaseStrength.PAIR.value + 60*pairs[0] + 6*vp[0] + .6*vp[1] + .06*vp[2]
+
+            return f'Pair of {value_names_plural[pairs[0]]}s'
+
+        if len(pairs) >= 2:
+            vps = values.copy()
+            pairs = sorted(pairs, reverse=True)
+            for _ in range(2):
+                vps.remove(pairs[0]); vps.remove(pairs[1])
+            cls.strength = BaseStrength.TWO_PAIR.value + 60*pairs[0] + 6*pairs[1] + .6*vps[0]
+
+            return f'{value_names_plural[pairs[0]]}s and {value_names_plural[pairs[1]]}s'
+
+    @classmethod
+    def trip(cls, values):
+        """Returns the name of a three-of-a-kind hand (string) given a list of the hand's card values.
+        Returns False if a set is not present within the hand. Also changes hand strength accordingly."""
+        trips = [val for val in values if values.count(val) == 3]
+        if not trips:
+            return False
+        else:
+            trips = max(trips)
+            vs = values.copy()
+            for _ in range(3):
+                vs.remove(trips)
+            cls.strength = BaseStrength.SET.value + 60*trips + 6*vs[0] + .6*vs[1]
+
+            return f'Set of {value_names_plural[trips]}s'
+
+    @classmethod
+    def straight(cls, vset, get_vals=False):
+        """Returns the name of a straight hand (string) given a set of the hand's card values.
+        Returns False if a straight is not present within the hand. Also changes hand strength accordingly.
+        If get_vals is true, straight() does not change strength and returns the values present in a straight."""
+        count = 0
+
+        if not get_vals:
+            straight = False
+            for rank in reversed([14, *range(2, 15)]):
+                if rank in vset:
+                    count += 1
+                    min_c = rank
+                    if count == 5:
+                        if min_c != 14:
+                            max_c = min_c + 4
+                        else:
+                            min_c, max_c = 1, 5
+                        cls.strength = BaseStrength.STRAIGHT.value + 70*max_c
+                        straight = f'Straight from {value_names[min_c]} to {value_names[max_c]}'
+                        break
+                else: count = 0
+            return straight
+
+        if get_vals:
+            sset = set()
+            for rank in reversed([14, *range(2, 15)]):
+                if rank in vset:
+                    count += 1
+                    sset.add(rank)
+                    if count == 5:
+                        return sset
+                else:
+                    count = 0
+                    sset = set()
+            raise Exception('No SSET')
+
+    @classmethod
+    def flush(cls, suits, all_cards):
+        """Returns the name of a flush hand (string) given a list of the hand's card suits and a list of all the cards
+        in the hand. Returns False if a flush is not present within the hand. Also changes hand strength accordingly."""
+        flushes = [suit for suit in suits if suits.count(suit) >= 5]
+        if flushes: flushes_vals = sorted([card.value for card in all_cards if card.suit == flushes[0]], reverse=True)
+        if not flushes:
+            return False
+        else:
+            cls.strength = BaseStrength.FLUSH.value + 60*flushes_vals[0] + 6*flushes_vals[1] + .6*flushes_vals[2] + \
+                       .06*flushes_vals[3] + .006*flushes_vals[4]
+            flush = f'{value_names[max(flushes_vals)]}-High flush of {flushes[0]}'
+
+        return flush
+
+    @classmethod
+    def full_house(cls, values):
+        """Returns the name of a filled up (string) hand given a list of the hand's card values.
+        Returns False if a full house is not present within the hand. Also changes hand strength accordingly."""
+        trips = list(dict.fromkeys(sorted([val for val in values if values.count(val) == 3], reverse=True)))
+        pairs = sorted([val for val in values if values.count(val) == 2], reverse=True)
+
+        if not trips or (len(trips) == 1 and not pairs):
+            return False
+
+        if pairs:
+            cls.strength = BaseStrength.FULL_HOUSE.value + 60*trips[0] + 6*pairs[0]
+            fh = f'{value_names_plural[trips[0]]}s full of {value_names_plural[pairs[0]]}s'
+
+        if len(trips) > 1:
+            if pairs:
+                if trips[1] > pairs[0]:
+                    cls.strength = BaseStrength.FULL_HOUSE.value + 60*trips[0] + 6*trips[1]
+                    fh = f'{value_names_plural[trips[0]]}s full of {value_names_plural[trips[1]]}s'
+            else:
+                cls.strength = BaseStrength.FULL_HOUSE.value + 60*trips[0] + 6*trips[1]
+                fh = f'{value_names_plural[trips[0]]}s full of {value_names_plural[trips[1]]}s'
+
+        return fh
+
+    @classmethod
+    def quads(cls, values):
+        """Returns the name of a four-of-a-kind hand (string) given a list of the hand's card values.
+        Returns False if quads are not present within the hand. Also changes hand strength accordingly."""
+        quads = [val for val in values if values.count(val) >= 4]
+        if not quads:
+            return False
+        else:
+            quads = max(quads)
+            vq = values.copy()
+            for _ in range(4): vq.remove(quads)
+            cls.strength = BaseStrength.QUADS.value + 60*quads + 6*vq[0]
+
+            return f'Quad {value_names_plural[quads]}s'
+
+    @classmethod
+    def straight_flush(cls, suits, all_cards):
+        """Returns the name of a straight or royal flush hand (string) given a list of the hand's card suits,
+        a set of the hand's card values, and a list of all the cards in the hand. Returns False if a straight or royal 
+        flush is not present within the hand. Also changes hand strength accordingly."""
+        straight_: str = None
+
+        flushes = [suit for suit in suits if suits.count(suit) >= 5]
+        if flushes:
+            flushes_vals = sorted([card.value for card in all_cards if card.suit == flushes[0]], reverse=True)
+
+            if HandTypeEvaluation.straight(flushes_vals):
+                straight_vals = HandTypeEvaluation.straight(flushes_vals, True)
+                if {14, 10, 11, 12, 13} <= straight_vals: straight_ = "Royal"
+                elif {14, 2, 3, 4, 5} <= straight_vals: straight_ = "Wheel"
+                else: straight_ = "Normal"
+
+        if straight_ == "Normal":
+            cls.strength = BaseStrength.STRAIGHT_FLUSH.value + 70*max(flushes_vals)
+            sf = f'{value_names[max(straight_vals)]}-High Straight Flush of {flushes[0]}'
+        elif straight_ == "Wheel":
+            cls.strength = BaseStrength.STRAIGHT_FLUSH.value
+            sf = f'Five-High Straight Flush of {flushes[0]}'
+        elif straight_ == "Royal":
+            cls.strength = BaseStrength.ROYAL_FLUSH.value
+            sf = f'Royal Flush of {flushes[0]}'
+        else:
+            return False
+
+        return sf
+
+
 def determine(hand):
     """Returns a list of values, a set of values, a list of suits, and a list of cards within a hand."""
     values, vset, suits, all_cards = [], set(), [], []
@@ -114,7 +293,7 @@ def determine(hand):
 
 def ss():
     """Prints hand strength if advanced stats are on"""
-    if show_strength_: print(f'[{round(strength / 10000, 6)}]')
+    if show_strength_: print(f'[{round(HandTypeEvaluation.strength / 10000, 6)}]')
     else: print()
 
 
@@ -222,199 +401,17 @@ def post_draw():
               f'({int(round(100*(time()-deck_end_time)/(time()-deck_start_time), 0))}%)')
 
 
-# Evaluation Functions
-
-def h_card(values):
-    """Returns the name of a high-card hand (string) given a list of the hand's card values.
-    Also changes hand strength accordingly."""
-    global strength
-    strength = BaseStrength.HIGH_CARD.value + 60*values[0] + 6*values[1] + .6*values[2] + .06*values[3] + .006*values[4]
-    return f'High-Card {value_names[values[0]]}'
-
-
-def num_pair(values):
-    """Returns the name of a one-pair or two-pair hand (string) given a list of the hand's card values.
-    Returns False if one-pair or two-pair is not present within the hand. Also changes hand strength accordingly."""
-    global strength
-    pairs = list(dict.fromkeys([val for val in values if values.count(val) == 2]))
-
-    if not pairs:
-        return False
-
-    if len(pairs) == 1:
-        vp = values.copy()
-        for _ in range(2):
-            vp.remove(pairs[0])
-        strength = BaseStrength.PAIR.value + 60*pairs[0] + 6*vp[0] + .6*vp[1] + .06*vp[2]
-
-        return f'Pair of {value_names[pairs[0]]}s'
-
-    if len(pairs) >= 2:
-        vps = values.copy()
-        pairs = sorted(pairs, reverse=True)
-        for _ in range(2):
-            vps.remove(pairs[0]); vps.remove(pairs[1])
-        strength = BaseStrength.TWO_PAIR.value + 60*pairs[0] + 6*pairs[1] + .6*vps[0]
-
-        return f'{value_names[pairs[0]]}s and {value_names[pairs[1]]}s'
-
-
-def trip(values):
-    """Returns the name of a three-of-a-kind hand (string) given a list of the hand's card values.
-    Returns False if a set is not present within the hand. Also changes hand strength accordingly."""
-    global strength
-    trips = [val for val in values if values.count(val) == 3]
-    if not trips:
-        return False
-    else:
-        trips = max(trips)
-        vs = values.copy()
-        for _ in range(3):
-            vs.remove(trips)
-        strength = BaseStrength.SET.value + 60*trips + 6*vs[0] + .6*vs[1]
-
-        return f'Set of {value_names[trips]}s'
-
-
-def straight(vset, get_vals=False):
-    """Returns the name of a straight hand (string) given a set of the hand's card values.
-    Returns False if a straight is not present within the hand. Also changes hand strength accordingly.
-    If get_vals is true, straight() does not change strength and returns the values present in a straight."""
-    global strength
-    count = 0
-
-    if not get_vals:
-        straight = False
-        for rank in reversed([14, *range(2, 15)]):
-            if rank in vset:
-                count += 1
-                min_c = rank
-                if count == 5:
-                    if min_c != 14:
-                    	max_c = min_c + 4
-                    else:
-                    	min_c, max_c = 1, 5
-                    strength = BaseStrength.STRAIGHT.value + 70*(max_c)
-                    straight = f'Straight from {value_names[min_c]} to {value_names[max_c]}'
-                    break
-            else: count = 0
-        return straight
-
-    if get_vals:
-        sset = set()
-        for rank in reversed([14, *range(2, 15)]):
-            if rank in vset:
-                count += 1
-                sset.add(rank)
-                if count == 5:
-                    return sset
-            else:
-                count = 0
-                sset = set()
-        raise Exception('No SSET')
-
-
-def flush(suits, all_cards):
-    """Returns the name of a flush hand (string) given a list of the hand's card suits and a list of all the cards
-    in the hand. Returns False if a flush is not present within the hand. Also changes hand strength accordingly."""
-    global strength
-    flushes = [suit for suit in suits if suits.count(suit) >= 5]
-    if flushes: flushes_vals = sorted([card.value for card in all_cards if card.suit == flushes[0]], reverse=True)
-    if not flushes:
-        return False
-    else:
-        strength = BaseStrength.FLUSH.value + 60*flushes_vals[0] + 6*flushes_vals[1] + .6*flushes_vals[2] + \
-                   .06*flushes_vals[3] + .006*flushes_vals[4]
-        flush = f'{value_names[max(flushes_vals)]}-High flush of {flushes[0]}'
-
-    return flush
-
-
-def full_house(values):
-    """Returns the name of a filled up (string) hand given a list of the hand's card values.
-    Returns False if a full house is not present within the hand. Also changes hand strength accordingly."""
-    global strength
-    trips = list(dict.fromkeys(sorted([val for val in values if values.count(val) == 3], reverse=True)))
-    pairs = sorted([val for val in values if values.count(val) == 2], reverse=True)
-
-    if not trips or (len(trips) == 1 and not pairs):
-        return False
-
-    if pairs:
-        strength = BaseStrength.FULL_HOUSE.value + 60*trips[0] + 6*pairs[0]
-        fh = f'{value_names[trips[0]]}s full of {value_names[pairs[0]]}s'
-
-    if len(trips) > 1:
-        if pairs:
-            if trips[1] > pairs[0]:
-                strength = BaseStrength.FULL_HOUSE.value + 60*trips[0] + 6*trips[1]
-                fh = f'{value_names[trips[0]]}s full of {value_names[trips[1]]}s'
-        else:
-            strength = BaseStrength.FULL_HOUSE.value + 60*trips[0] + 6*trips[1]
-            fh = f'{value_names[trips[0]]}s full of {value_names[trips[1]]}s'
-
-    return fh
-
-
-def quads(values):
-    """Returns the name of a four-of-a-kind hand (string) given a list of the hand's card values.
-    Returns False if quads are not present within the hand. Also changes hand strength accordingly."""
-    global strength
-    quads = [val for val in values if values.count(val) >= 4]
-    if not quads:
-        return False
-    else:
-        quads = max(quads)
-        vq = values.copy()
-        for _ in range(4): vq.remove(quads)
-        strength = BaseStrength.QUADS.value + 60*quads + 6*vq[0]
-
-        return f'Quad {value_names[quads]}s'
-
-
-def straight_flush(suits, all_cards):
-    """Returns the name of a straight or royal flush hand (string) given a list of the hand's card suits,
-    a set of the hand's card values, and a list of all the cards in the hand. Returns False if a straight or royal flush
-    is not present within the hand. Also changes hand strength accordingly."""
-    global strength
-    straight_: str = None
-
-    flushes = [suit for suit in suits if suits.count(suit) >= 5]
-    if flushes:
-        flushes_vals = sorted([card.value for card in all_cards if card.suit == flushes[0]], reverse=True)
-
-        if straight(flushes_vals):
-            straight_vals = straight(flushes_vals, True)
-            if {14, 10, 11, 12, 13} <= straight_vals: straight_ = "Royal"
-            elif {14, 2, 3, 4, 5} <= straight_vals: straight_ = "Wheel"
-            else: straight_ = "Normal"
-
-    if straight_ == "Normal":
-        strength = BaseStrength.STRAIGHT_FLUSH.value + 70*max(flushes_vals)
-        sf = f'{value_names[max(straight_vals)]}-High Straight Flush of {flushes[0]}'
-    elif straight_ == "Wheel":
-        strength = BaseStrength.STRAIGHT_FLUSH.value
-        sf = f'Five-High Straight Flush of {flushes[0]}'
-    elif straight_ == "Royal":
-        strength = BaseStrength.ROYAL_FLUSH.value
-        sf = f'Royal Flush of {flushes[0]}'
-    else:
-        return False
-
-    return sf
-
-
 def evalhand(values, suits, vset, all_cards):
     """Returns the exact type of hand (string) that is present given a list of values and suits within the hand,
     a set of values within the hand, and a list of all the cards in the hand"""
-    x = straight_flush(suits, all_cards)
-    if not x: x = quads(values)
-    if not x: x = full_house(values)
-    if not x: x = flush(suits, all_cards)
-    if not x: x = straight(vset)
-    if not x: x = trip(values)
-    if not x: x = num_pair(values)
-    if not x: x = h_card(values)
+    x = HandTypeEvaluation.straight_flush(suits, all_cards)
+    if not x: x = HandTypeEvaluation.quads(values)
+    if not x: x = HandTypeEvaluation.full_house(values)
+    if not x: x = HandTypeEvaluation.flush(suits, all_cards)
+    if not x: x = HandTypeEvaluation.straight(vset)
+    if not x: x = HandTypeEvaluation.trip(values)
+    if not x: x = HandTypeEvaluation.num_pair(values)
+    if not x: x = HandTypeEvaluation.h_card(values)
 
     return x
 
@@ -428,8 +425,8 @@ def showdown_poker():  # Main Function
         exact_hand = evalhand(values, suits, vset, all_cards)
         print('\n'+exact_hand, end=" "); ss()
 
-        hand_occurrence[floor(strength/1000-1)] += 1
-        h_strength[h_inc] = strength
+        hand_occurrence[floor(HandTypeEvaluation.strength/1000-1)] += 1
+        h_strength[h_inc] = HandTypeEvaluation.strength
 
     post_draw()
 
@@ -440,6 +437,8 @@ hand_occurrence = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0}
 
 value_names = {1: 'Ace', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine',
                10: 'Ten', 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace', 0: 'EMPTY'}
+value_names_plural = {1: 'Ace', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Sixe', 7: 'Seven', 8: 'Eight',
+                      9: 'Nine', 10: 'Ten', 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace'}
 suit_names = {"Hearts": '♥', "Spades": '♠', "Clubs": '♣', "Diamonds": '♦', 0: ''}
 
 drawcards, h_strength = {}, {}
