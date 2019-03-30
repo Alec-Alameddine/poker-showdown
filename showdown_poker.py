@@ -1,6 +1,6 @@
 import distutils.core
 from math import floor
-from random import shuffle, randint, choice
+from random import shuffle, randint
 from enum import Enum
 from time import time
 
@@ -35,7 +35,7 @@ class Card:
 
         return self.value == other_card.value and self.suit == other_card.suit
 
-    def __ne__(self,other_card):
+    def __ne__(self, other_card):
         """Returns False if the value and suit for two cards are equal"""
         return not self == other_card
 
@@ -52,7 +52,7 @@ class Deck:
 
     def create(self):
         """Generate all of the cards"""
-        for _ in range(decks):
+        for _ in range(decks_):
             for val in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14):
                 for suit in ("Hearts", "Spades", "Clubs", "Diamonds"):
                     self.cards.append(Card(val, suit))
@@ -76,7 +76,7 @@ class Deck:
                         self.cards.remove(drawcards[card])
                         card += 1
                     else:
-                        drawcards[card] = Card(0,0)
+                        drawcards[card] = Card(0, 0)
                         card += 1
                 else:
                     i = randint(0, (len(self.cards) - 1))
@@ -109,7 +109,8 @@ class HandTypeEvaluation:
     def h_card(cls, values):
         """Returns the name of a high-card hand (string) given a list of the hand's card values.
         Also changes hand strength accordingly."""
-        cls.strength = BaseStrength.HIGH_CARD.value + 60*values[0] + 6*values[1] + .6*values[2] + .06*values[3] + .006*values[4]
+        cls.strength = BaseStrength.HIGH_CARD.value + 60*values[0] + 6*values[1] + .6*values[2] + .06*values[3]\
+                       + .006*values[4]
         return f'High-Card {value_names[values[0]]}'
 
     @classmethod
@@ -196,7 +197,8 @@ class HandTypeEvaluation:
         """Returns the name of a flush hand (string) given a list of the hand's card suits and a list of all the cards
         in the hand. Returns False if a flush is not present within the hand. Also changes hand strength accordingly."""
         flushes = [suit for suit in suits if suits.count(suit) >= 5]
-        if flushes: flushes_vals = sorted([card.value for card in all_cards if card.suit == flushes[0]], reverse=True)
+        if flushes:
+            flushes_vals = sorted([card.value for card in all_cards if card.suit == flushes[0]], reverse=True)
         if not flushes:
             return False
         else:
@@ -241,7 +243,8 @@ class HandTypeEvaluation:
         else:
             quads = max(quads)
             vq = values.copy()
-            for _ in range(4): vq.remove(quads)
+            for _ in range(4):
+                vq.remove(quads)
             cls.strength = BaseStrength.QUADS.value + 60*quads + 6*vq[0]
 
             return f'Quad {value_names_plural[quads]}s'
@@ -308,7 +311,8 @@ def determine(hand):
 
 def ss():
     """Prints hand strength if advanced stats are on"""
-    if show_strength_: print(f'[{round(HandTypeEvaluation.strength / 10000, 6)}]')
+    if show_strength_:
+        print(f'[{round(HandTypeEvaluation.strength / 10000, 6)}]')
     else: print()
 
 
@@ -382,11 +386,13 @@ def print_hand(user_hand, h_inc):
     print(f"\nPlayer {h_inc + 1}'s hand:")
     print("| ", end="")
     if DEBUG:
-        for c_x in user_hand: print(repr(user_hand[c_x]), end=" | ")
+        for c_x in user_hand:
+            print(repr(user_hand[c_x]), end=" | ")
         if sorted(list(set(user_hand))) != sorted(user_hand):
             print("DUPLICATE", end="")
     else:
-        for c_x in user_hand: print(user_hand[c_x], end=" | ")
+        for c_x in user_hand:
+            print(user_hand[c_x], end=" | ")
 
 
 def post_draw():
@@ -404,10 +410,12 @@ def post_draw():
         print(f'Player {hss[hnumber-1][0]+1} has the weakest hand :( [{round(hss[hnumber-1][1]/10000, 6)}]')
 
         print('\n\n\n\n\nHand Occurrence:\n')
-        for x in range(10): print(ho_names[x], hand_occurrence[x], f'({round(100*hand_occurrence[x]/len(hss), 2)}%)')
+        for x in range(10):
+            print(ho_names[x], hand_occurrence[x], f'({round(100*hand_occurrence[x]/len(hss), 2)}%)')
 
         print('\n\n\n\n\nFull Player Ranking:\n')
-        for x in range(len(hss)): print(f'{x+1}.', f'Player {hss[x][0]+1}', f'[{round(hss[x][1]/10000, 6)}]')
+        for x in range(len(hss)):
+            print(f'{x+1}.', f'Player {hss[x][0]+1}', f'[{round(hss[x][1]/10000, 6)}]')
 
         print('\n\n\nComplete Execution Time:', "~%ss" % (round(time()-deck_start_time, 2)))
         print('Deck Build Time:', '~%ss' % (round(deck_end_time-deck_start_time, 2)),
@@ -443,7 +451,7 @@ suit_names = {"Hearts": '♥', "Spades": '♠', "Clubs": '♣', "Diamonds": '♦
 
 drawcards, h_strength = {}, {}
 
-decks, cards_per_hand, hnumber, show_strength_ = get_inputs()
+decks_, cards_per_hand, hnumber, show_strength_ = get_inputs()
 deck_start_time = time()
 
 deck = Deck()
