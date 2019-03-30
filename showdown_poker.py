@@ -1,5 +1,5 @@
 import distutils.core
-from random import shuffle, randint
+from random import shuffle, randint, choice
 from enum import Enum
 from time import time
 from math import floor
@@ -22,7 +22,7 @@ class Card:
     def __repr__(self):
         """Represents each card in two characters"""
         if self.value == 0:
-            return 'EMPTY'
+            return '__'
         elif 0 < self.value < 10:
             return f'{self.value}{self.suit[0].lower()}'
         elif self.value >= 10:
@@ -34,6 +34,10 @@ class Card:
             return False
 
         return self.value == other_card.value and self.suit == other_card.suit
+
+    def __ne__(self,other_card):
+        """Returns False if the value and suit for two cards are equal"""
+        return not self == other_card
 
     def __hash__(self):
         """Defines card object hashing for the purpose of comparing equality"""
@@ -55,19 +59,28 @@ class Deck:
         shuffle(self.cards)
 
     def draw(self, c):
-        """Generate a hand of c cards"""
-        y, s = 0, 0
-        while y < c:
+        """Generate a hand of c unique cards"""
+        card = 0
+        while card < c:
             if self.cards[-1] not in drawcards.values():
-                drawcards[y] = self.cards.pop()
-                y += 1
+                drawcards[card] = self.cards.pop()
+                card += 1
             else:
-                i = randint(0, (len(self.cards) - 1))
-                self.cards[i], self.cards[-1] = self.cards[-1], self.cards[i]
-                s += 1
-                if s == 2500:
-                    drawcards[y] = Card(0,0)
-                    y += 1
+                if len(self.cards) <= 520 and len(drawcards) <= 520:
+                    s = set(list(drawcards.values()) + self.cards)
+                    if s:
+                        for x in self.cards:
+                            if x not in drawcards.values():
+                                drawcards[card] = x
+                                break
+                        self.cards.remove(drawcards[card])
+                        card += 1
+                    else:
+                        drawcards[card] = Card(0,0)
+                        card += 1
+                else:
+                    i = randint(0, (len(self.cards) - 1))
+                    self.cards[i], self.cards[-1] = self.cards[-1], self.cards[i]
 
         return drawcards
 
@@ -215,7 +228,7 @@ def h_card(values):
     """Returns the name of a high-card hand (string) given a list of the hand's card values.
     Also changes hand strength accordingly."""
     global strength
-    strength = BaseStrength.HIGH_CARD.value + 10*values[0] + values[1] + .1*values[2] + .01*values[3] + .001*values[4]
+    strength = BaseStrength.HIGH_CARD.value + 60*values[0] + 6*values[1] + .6*values[2] + .06*values[3] + .006*values[4]
     return f'High-Card {value_names[values[0]]}'
 
 
@@ -224,21 +237,24 @@ def num_pair(values):
     Returns False if one-pair or two-pair is not present within the hand. Also changes hand strength accordingly."""
     global strength
     pairs = list(dict.fromkeys([val for val in values if values.count(val) == 2]))
+
     if not pairs:
         return False
+
     if len(pairs) == 1:
         vp = values.copy()
         for _ in range(2):
             vp.remove(pairs[0])
-        strength = BaseStrength.PAIR.value + 10*pairs[0] + vp[0] + .1*vp[1] + .01*vp[2]
+        strength = BaseStrength.PAIR.value + 60*pairs[0] + 6*vp[0] + .6*vp[1] + .06*vp[2]
 
         return f'Pair of {value_names[pairs[0]]}s'
+
     if len(pairs) >= 2:
         vps = values.copy()
         pairs = sorted(pairs, reverse=True)
         for _ in range(2):
             vps.remove(pairs[0]); vps.remove(pairs[1])
-        strength = (BaseStrength.TWO_PAIR.value + 10*int(pairs[0]) + int(pairs[1])) + .1*vps[0]
+        strength = BaseStrength.TWO_PAIR.value + 60*pairs[0] + 6*pairs[1] + .6*vps[0]
 
         return f'{value_names[pairs[0]]}s and {value_names[pairs[1]]}s'
 
@@ -251,12 +267,13 @@ def trip(values):
     if not trips:
         return False
     else:
+        trips = max(trips)
         vs = values.copy()
         for _ in range(3):
-            vs.remove(trips[0])
-        strength = BaseStrength.SET.value + 10*trips[0] + vs[0] + .1*vs[1]
+            vs.remove(trips)
+        strength = BaseStrength.SET.value + 60*trips + 6*vs[0] + .6*vs[1]
 
-        return f'Set of {value_names[trips[0]]}s'
+        return f'Set of {value_names[trips]}s'
 
 
 def straight(vset, get_vals=False):
@@ -306,8 +323,8 @@ def flush(suits, all_cards):
     if not flushes:
         return False
     else:
-        strength = BaseStrength.FLUSH.value + 10*flushes_vals[0] + flushes_vals[1] + .1*flushes_vals[2] + \
-                   .01*flushes_vals[3] + .001*flushes_vals[4]
+        strength = BaseStrength.FLUSH.value + 60*flushes_vals[0] + 6*flushes_vals[1] + .6*flushes_vals[2] + \
+                   .06*flushes_vals[3] + .006*flushes_vals[4]
         flush = f'{value_names[max(flushes_vals)]}-High flush of {flushes[0]}'
 
     return flush
@@ -324,16 +341,16 @@ def full_house(values):
         return False
 
     if pairs:
-        strength = BaseStrength.FULL_HOUSE.value + 10*trips[0] + pairs[0]
+        strength = BaseStrength.FULL_HOUSE.value + 60*trips[0] + 6*pairs[0]
         fh = f'{value_names[trips[0]]}s full of {value_names[pairs[0]]}s'
 
     if len(trips) > 1:
         if pairs:
             if trips[1] > pairs[0]:
-                strength = BaseStrength.FULL_HOUSE.value + 10*trips[0] + trips[1]
+                strength = BaseStrength.FULL_HOUSE.value + 60*trips[0] + 6*trips[1]
                 fh = f'{value_names[trips[0]]}s full of {value_names[trips[1]]}s'
         else:
-            strength = BaseStrength.FULL_HOUSE.value + 10*trips[0] + trips[1]
+            strength = BaseStrength.FULL_HOUSE.value + 60*trips[0] + 6*trips[1]
             fh = f'{value_names[trips[0]]}s full of {value_names[trips[1]]}s'
 
     return fh
@@ -350,9 +367,9 @@ def quads(values):
         quads = max(quads)
         vq = values.copy()
         for _ in range(4): vq.remove(quads)
-        strength = BaseStrength.QUADS.value + 10*quads + vq[0]
+        strength = BaseStrength.QUADS.value + 60*quads + 6*vq[0]
 
-        return f'Quad {value_names[quads[0]]}s'
+        return f'Quad {value_names[quads]}s'
 
 
 def straight_flush(suits, all_cards):
@@ -422,7 +439,7 @@ ho_names = ('High Card: ', 'Pair: ', 'Two-Pair: ', 'Three of a Kind: ', 'Straigh
 hand_occurrence = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0}
 
 value_names = {1: 'Ace', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine',
-               10: 'Ten', 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace', 0: 'CANNOT DRAW NON-DUPE'}
+               10: 'Ten', 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace', 0: 'EMPTY'}
 suit_names = {"Hearts": '♥', "Spades": '♠', "Clubs": '♣', "Diamonds": '♦', 0: ''}
 
 drawcards, h_strength = {}, {}
