@@ -46,8 +46,9 @@ class Card:
 
 class Deck:
     """A class containing all of the cards that can be drawn as part of a hand"""
-    def __init__(self):
+    def __init__(self, shuffle_cards=True):
         self.cards = []
+        self.shuffle_cards = shuffle_cards
         self.create()
 
     def create(self):
@@ -56,17 +57,19 @@ class Deck:
             for val in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14):
                 for suit in ("Hearts", "Spades", "Clubs", "Diamonds"):
                     self.cards.append(Card(val, suit))
-        shuffle(self.cards)
+
+        if self.shuffle_cards:
+            shuffle(self.cards)
 
     def draw(self, c):
         """Generate a hand of c unique cards"""
-        card = 0
+        card, x = 0, 0
         while card < c:
             if self.cards[-1] not in drawcards.values():
                 drawcards[card] = self.cards.pop()
                 card += 1
             else:
-                if len(self.cards) <= 520 and len(drawcards) <= 520:
+                if (len(self.cards) <= 520 and len(drawcards) <= 520) or x == 10**5:
                     s = set(list(drawcards.values()) + self.cards)
                     if s:
                         for x in self.cards:
@@ -81,6 +84,7 @@ class Deck:
                 else:
                     i = randint(0, (len(self.cards) - 1))
                     self.cards[i], self.cards[-1] = self.cards[-1], self.cards[i]
+                    x += 1
 
         return drawcards
 
@@ -111,6 +115,7 @@ class HandTypeEvaluation:
         Also changes hand strength accordingly."""
         cls.strength = BaseStrength.HIGH_CARD.value + 60*values[0] + 6*values[1] + .6*values[2] + .06*values[3]\
                        + .006*values[4]
+
         return f'High-Card {value_names[values[0]]}'
 
     @classmethod
@@ -304,6 +309,7 @@ def determine(hand):
         vset.add(hand[x].value)
         suits.append(hand[x].suit)
         all_cards.append(hand[x])
+
     return sorted(values, reverse=True), vset, suits, all_cards
 
 
