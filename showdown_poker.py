@@ -43,6 +43,10 @@ class Card:
         """Defines card object hashing for the purpose of comparing equality"""
         return hash((self.value, self.suit))
 
+    def __int__(self):
+        """Returns a Card's value"""
+        return self.value
+
 
 class Deck:
     """A class containing all of the cards that can be drawn as part of a hand"""
@@ -209,7 +213,7 @@ class HandTypeEvaluation:
         else:
             cls.strength = BaseStrength.FLUSH.value + 60*flushes_vals[0] + 6*flushes_vals[1] + .6*flushes_vals[2] + \
                        .06*flushes_vals[3] + .006*flushes_vals[4]
-            flush = f'{value_names[max(flushes_vals)]}-High flush of {flushes[0]}'
+            flush = f'{value_names[max(flushes_vals)]}-High Flush of {flushes[0]}'
 
         return flush
 
@@ -305,8 +309,8 @@ def determine(hand):
     """Returns a list of values, a set of values, a list of suits, and a list of cards within a hand."""
     values, vset, suits, all_cards = [], set(), [], []
     for x in range(len(hand)):
-        values.append(hand[x].value)
-        vset.add(hand[x].value)
+        values.append(int(hand[x]))
+        vset.add(int(hand[x]))
         suits.append(hand[x].suit)
         all_cards.append(hand[x])
 
