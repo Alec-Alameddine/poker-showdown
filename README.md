@@ -54,7 +54,7 @@ This section will discuss how hands are ranked. The suits that comprise any spec
 
 ### Holdem Hand Ranking
 1. Royal Flush:
-    The strongest straight flush. A-K-Q-J-T all of the same suit constitutes the only royal flush.
+  *The strongest straight flush. A-K-Q-J-T all of the same suit constitutes the only royal flush.
 2. Straight Flush
 
 ### Hold'Em Hand Evaluation Rules
