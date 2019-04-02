@@ -53,7 +53,7 @@ Additionally, hand strength, as determined by the program's hand-ranking algorit
 This section will discuss how hands are ranked. The suits that comprise any specific hand (including flushes and straight flushes, which require five or more cards of the same suit) do not matter, so ties can be present even when using a single deck. In the event of a tie, one hand will be randomly chosen to be the better than the other(s).
 
 ### Holdem Hand Ranking
-* 1. Royal Flush:
+* Royal Flush:
   *The strongest straight flush. A-K-Q-J-T all of the same suit constitutes the only royal flush.
 * 2. Straight Flush
 
