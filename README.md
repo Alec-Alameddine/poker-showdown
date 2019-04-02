@@ -80,9 +80,19 @@ Five consecutive cards. Ace can act as the low card to constitute a A-2-3-4-5 st
 
 **7. Three of a Kind:**
 
-Three cards of the same value
+Three cards of the same value.
 
 **8. Two-Pair:**
+
+Two cards of one value, coupled with another two cards of another value.
+
+**9. Pair:**
+
+Two cards of the same value.
+
+**10. High Card:**
+
+If no other hand is present, the hand containing the highest card(s) wins.
 
 
 ### Hold'Em Hand Evaluation Rules
