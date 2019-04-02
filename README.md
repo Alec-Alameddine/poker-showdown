@@ -50,13 +50,13 @@ If advanced stats are on, three pieces of information are displayed following th
 Additionally, hand strength, as determined by the program's hand-ranking algorithm, is displayed next to every hand and player ranking. A hand strength of 1 represents the best possible hand, a Royal Flush.
 
 ## Hand Evaluation
-xxx
-
-### Hold'Em Hand Evaluation Rules
-xxx (best 5)
+This section will discuss how hands are ranked. The suits that comprise any specific hand (including flushes and straight flushes, which require five or more cards of the same suit) do not matter, so ties can be present even when using a single deck. In the event of a tie, one hand will be randomly chosen to be the better than the other(s).
 
 ### Holdem Hand Ranking
-xxx (1. rf --> 10 hc, kickers)
+xxx (1. rf --> 10 hc)
+
+### Hold'Em Hand Evaluation Rules
+Hands are evaluated by determining the best 5-card combination that can be made. No combination except for the best one matters when evaluating a hand. If two hands both fall under one hand ranking subset (listed above), the cards' ranks are used to determine the best hand, where 2 is the weakest card and Ace is the strongest. The strongest card that determines the hand ranking subset matters above all others, and if the strongest card is tied the next strongest one is used. If every card that determines a hand ranking subset is of equal rank, the strongest card that does not determine a hand ranking subset is used. If a winner still cannot be determined, the next strongest card will be considered until the weakest card. Only if every value in the best five-card hand from two seperate hands is equal will a tie be present. In the case of an A-5 straight or straight flush (coined `wheel` and `steel wheel` respectively), the Ace is considered to be a 1 and the A-5 straight or straight flush thus loses to all other straights or straight flushes.
 
 ### Examples
 xxx
