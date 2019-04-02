@@ -57,13 +57,33 @@ This section will discuss how hands are ranked. The suits that comprise any spec
 
 The strongest straight flush. A-K-Q-J-T all of the same suit constitutes the only royal flush.
 
-**2. Straight Flush**
+**2. Straight Flush:**
 
 Five consecutive cards that are also all of the same suit. Ace can act as the low card to constitute a A-2-3-4-5 straight flush.
 
-**3. Four of a Kind**
+**3. Four of a Kind:**
 
 Four cards of the same value.
+
+**4. Full House:**
+
+Three cards of the same value present in conjunction with another two of a different value.
+
+**5. Flush:**
+
+Five cards of the same suit.
+
+
+**6. Straight:**
+
+Five consecutive cards. Ace can act as the low card to constitute a A-2-3-4-5 straight.
+
+**7. Three of a Kind:**
+
+Three cards of the same value
+
+**8. Two-Pair:**
+
 
 ### Hold'Em Hand Evaluation Rules
 Hands are evaluated by determining the best 5-card combination that can be made. No combination except for the best one matters when evaluating a hand. If two hands both fall under one hand ranking subset (listed above), the cards' ranks are used to determine the best hand, where 2 is the weakest card and Ace is the strongest. The strongest card that determines the hand ranking subset matters above all others, and if the strongest card is tied the next strongest one is used. If every card that determines a hand ranking subset is of equal rank, the strongest card that does not determine a hand ranking subset is used. If a winner still cannot be determined, the next strongest card will be considered until the weakest card. Only if every value in the best five-card hand from two seperate hands is equal will a tie be present. In the case of an A-5 straight or straight flush (coined `wheel` and `steel wheel` respectively), the Ace is considered to be a 1 and the A-5 straight or straight flush loses to all other straights or straight flushes.
