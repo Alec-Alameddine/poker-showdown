@@ -1,6 +1,6 @@
-import distutils.core
-from math import floor
+from distutils.util import strtobool
 from random import shuffle, randint
+from math import floor
 from enum import Enum
 from time import time
 
@@ -80,7 +80,8 @@ class Deck:
                             if x not in drawcards.values():
                                 drawcards[card] = x
                                 break
-                        self.cards.remove(drawcards[card])
+                        if drawcards[card] in self.cards:
+                            self.cards.remove(drawcards[card])
                         card += 1
                     else:
                         drawcards[card] = Card(0, 0)
@@ -322,7 +323,7 @@ def determine(hand):
 def ss():
     """Prints hand strength if advanced stats are on"""
     if show_strength_:
-        print(f'[{round(HandTypeEvaluation.strength / 10000, 6)}]')
+        print('[{:6.6f}]'.format(HandTypeEvaluation.strength/10**4, 6))
     else: print()
 
 
@@ -331,14 +332,14 @@ def hnumber(max_v, msg):
     while True:
         try:
             hn = input(msg)
-            if hn.lower() == 'm' or hn.lower() == 'max':
+            if hn.lower() in ('m', 'max', 'mx', 'maximum'):
                 return max_v
             elif 0 < int(hn) <= max_v:
                 return int(hn)
             else:
                 print(f'Please enter an integer between 1 and {max_v}.')
         except ValueError:
-            print('Please enter a positive integer.')
+            print('Please either enter a positive integer or \'max\'.')
 
 
 def decks(msg):
@@ -371,7 +372,7 @@ def show_strength(msg):
     """Returns a boolean indicating whether advanced stats are shown"""
     while True:
         try:
-            ss = distutils.util.strtobool(input(msg))
+            ss = strtobool(input(msg))
             if ss == 0 or ss == 1:
                 return ss
             else:
@@ -414,24 +415,41 @@ def post_draw():
         print(f'\n\n\nPlayer {hss[0][0] + 1} has the strongest hand!')
         print(f'Player {hss[hnumber-1][0]+1} has the weakest hand :(')
 
-    if show_strength_:
+    else:
+        stats_start_time = time()
 
-        print(f'\n\n\nPlayer {hss[0][0] + 1} has the strongest hand! [{round(hss[0][1]/10000, 6)}]')
-        print(f'Player {hss[hnumber-1][0]+1} has the weakest hand :( [{round(hss[hnumber-1][1]/10000, 6)}]')
+
+        print(f'\n\n\nPlayer {hss[0][0] + 1} has the strongest hand! [' + '{:6.6f}]'.format(hss[0][1]/10**4, 6))
+        print(f'Player {hss[hnumber-1][0]+1} has the weakest hand :( [' + '{:6.6f}]'.format(hss[hnumber-1][1]/10**4))
+
+        strength_avg = sum([hss[x][1] for x in range(len(hss))])/len(hss)
+        print(f'Average Hand: {ho_names[floor(strength_avg/1000-1)]} [' + '{:6.6f}]'.format(strength_avg/10**4, 6))
+
 
         print('\n\n\n\n\nHand Occurrence:\n')
         for x in range(10):
-            print(ho_names[x], hand_occurrence[x], f'({round(100*hand_occurrence[x]/len(hss), 2)}%)')
+            print(ho_names[x]+': ', hand_occurrence[x], f'({round(100*hand_occurrence[x]/len(hss), 2)}%)')
 
         print('\n\n\n\n\nFull Player Ranking:\n')
         for x in range(len(hss)):
-            print(f'{x+1}.', f'Player {hss[x][0]+1}', f'[{round(hss[x][1]/10000, 6)}]')
+            print(f'{x+1:0{len(str(len(hss)))}}.', f'Player {hss[x][0]+1:0{len(str(len(hss)))}}', '[{:6.6f}]'.format(hss[x][1]/10**4, 6))
 
-        print('\n\n\nComplete Execution Time:', "~%ss" % (round(time()-deck_start_time, 2)))
-        print('Deck Build Time:', '~%ss' % (round(deck_end_time-deck_start_time, 2)),
-              f'({int(round(100*(deck_end_time-deck_start_time)/(time()-deck_start_time), 0))}%)')
-        print('Hand Build Time:', '~%ss' % (round(time()-deck_end_time, 2)),
-              f'({int(round(100*(time()-deck_end_time)/(time()-deck_start_time), 0))}%)')
+        t_time = time()-deck_start_time
+        d_time = deck_end_time-deck_start_time
+        h_time = stats_start_time-deck_end_time
+        s_time = time()-stats_start_time
+
+        print('\n\n\nPerformance:\n')
+        print('Complete Execution Time:', "~%ss" % (round(t_time, 2)))
+
+        print('Deck Build Time:', '~%ss' % (round(d_time, 2)),
+              f'({int(round(100*d_time/t_time, 0))}%)')
+
+        print('Hand Build Time:', '~%ss' % (round(h_time, 2)),
+              f'({int(round(100*h_time/t_time, 0))}%)')
+
+        print('Stats Calculation Time:', '~%ss' % (round(s_time, 2)),
+              f'({int(round(100*s_time/t_time, 0))}%)')
 
 
 def showdown_poker():  # Main Function
@@ -449,8 +467,8 @@ def showdown_poker():  # Main Function
     post_draw()
 
 
-ho_names = ('High Card: ', 'Pair: ', 'Two-Pair: ', 'Three of a Kind: ', 'Straight: ', 'Flush: ', 'Full House: ',
-            'Four of a Kind: ', 'Straight Flush: ', 'Royal Flush: ')
+ho_names = ('High Card', 'Pair', 'Two-Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House',
+            'Four of a Kind', 'Straight Flush', 'Royal Flush')
 hand_occurrence = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0}
 
 value_names = {1: 'Ace', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine',
