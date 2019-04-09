@@ -27,7 +27,7 @@ How many players are there (max __)?
 
 The maximum input is dependent on the amount of cards per hand and also the amount of decks generated. The minimum input is 1. Any integer between 1 and the maximum value (inclusive), which will be displayed in the prompt, is valid. 
 
-An input of 'm' or 'max' will generate hands for the maxiumum amount of players possible.
+An input of 'm', 'mx', 'max' or 'maximum' will generate hands for the maxiumum amount of players possible.
 
 ### Advanced Stats
 The final prompt asks the user if he'd like to see advanced stats:
@@ -40,12 +40,12 @@ Any of these inputs is an indication that the user would not like to see advance
 
 If advanced stats are off, only the players with the best and worst hands are shown.
 
-If advanced stats are on, three pieces of information are displayed following the first and last place player:
+If advanced stats are on, four pieces of information are displayed following the first and last place player:
 
-
-1. Hand occurence of the ten types of hands
-2. The full player ranking
-3. Execution time, including total execution time, deck build time, and hand build time.
+1. The hand type corresponding to the average hand strength
+2. Hand occurence of the ten types of hands
+3. The full player ranking
+4. Execution time, including total execution time, deck build time, hand build time, and stats calculation time.
 
 Additionally, hand strength, as determined by the program's hand-ranking algorithm, is displayed next to every hand and player ranking. A hand strength of 1 represents the best possible hand, a Royal Flush.
 
