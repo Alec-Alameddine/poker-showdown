@@ -27,7 +27,7 @@ How many players are there (max __)?
 
 The maximum input is dependent on the amount of cards per hand and also the amount of decks generated. The minimum input is 1. Any integer between 1 and the maximum value (inclusive), which will be displayed in the prompt, is valid. 
 
-An input of 'm', 'mx', 'max' or 'maximum' will generate hands for the maxiumum amount of players possible.
+An input of 'm', 'mx', 'max' or 'maximum' will generate hands for the maximum amount of players possible.
 
 ### Advanced Stats
 The final prompt asks the user if he'd like to see advanced stats:
